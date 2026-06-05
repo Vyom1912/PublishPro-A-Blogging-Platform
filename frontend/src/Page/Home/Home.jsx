@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
-import { Card } from "../components";
-import api from "../api/axios";
-
-// import blogs from "../data/blogs";
-// import { getBlogs } from "../services/blogService";
-
+import { Card } from "../../components";
+import api from "../../api/axios.js";
+import "./Home.css";
 function Home() {
   const [blogs, setBlogs] = useState([]);
-
-  // const blogs = getBlogs();
-
   useEffect(() => {
     fetchBlogs();
   }, []);
@@ -27,15 +21,9 @@ function Home() {
   };
 
   return (
-    <div>
-      <h1 className='text-3xl font-bold underline'>Hello world!</h1>
-      <div
-        style={{
-          padding: "20px",
-          display: "flex",
-          gap: "20px",
-          flexWrap: "wrap",
-        }}>
+    <div className='home-container'>
+      {/* <h1 className='text-3xl font-bold underline'>Hello world!</h1> */}
+      <div className='home-blogs-box'>
         {blogs.map((blog) => (
           <Card
             key={blog._id}

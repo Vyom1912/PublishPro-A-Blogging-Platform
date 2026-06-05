@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
-
+import "./SignUp.css";
 function SignUp() {
   const { setUser } = useAuth();
   const [name, setName] = useState("");
@@ -30,19 +30,18 @@ function SignUp() {
     }
   };
   return (
-    <div>
+    <div className='login flex'>
       <h1 className='text-3xl font-bold underline'>Sign Up</h1>
 
-      <form className='w-full max-w-sm' onSubmit={handleSubmit}>
-        <div className='form-group mb-6'>
+      <form className='flex f-form' onSubmit={handleSubmit}>
+        <div className='form-group'>
           <label for='name'> Name</label>
           <input
             type='text'
             id='name'
-            className='form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder='Enter Name'
+            placeholder='Enter Name......'
           />
         </div>
         <div className='form-group'>
@@ -53,8 +52,7 @@ function SignUp() {
             value={email}
             name='email'
             onChange={(e) => setEmail(e.target.value)}
-            className='form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
-            placeholder='Enter email'
+            placeholder='Enter email......'
           />
         </div>
         <div className='form-group'>
@@ -64,14 +62,11 @@ function SignUp() {
             id='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className='form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none'
-            placeholder='Enter password'
+            placeholder='Enter password......'
           />
         </div>
-        <button
-          type='submit'
-          className='px-6 py-2.5 bg-blue-600 text-white font-medium text-sm leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out'>
-          Login
+        <button type='submit' className='save-btn'>
+          Signup
         </button>
       </form>
       <label>

@@ -1,7 +1,8 @@
 // import React from "react";
 import { useState } from "react";
-import { RTE } from "../components";
-import api from "../api/axios";
+import { RTE } from "../../components";
+import api from "../../api/axios";
+import "./AddBlog.css";
 function AddBlog() {
   const [title, setTitle] = useState("");
   const [titleImage, setTitleImage] = useState(null);
@@ -33,20 +34,6 @@ function AddBlog() {
     try {
       const token = localStorage.getItem("token");
 
-      // const res = await api.post(
-      //   "/blogs",
-      //   {
-      //     title,
-      //     content,
-      //     featuredImage: imagePreview,
-      //   },
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   },
-      // );
-
       const res = await api.post("/blogs", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,34 +50,39 @@ function AddBlog() {
     }
   };
   return (
-    <div>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <input
-          type='text'
-          placeholder='Title'
-          onChange={(e) => setTitle(e.target.value)}
-          className='input input-bordered w-full max-w-xs'
-        />
-        <input
-          type='file'
-          placeholder='Title Image'
-          onChange={handleImageChange}
-          className='input input-bordered w-full max-w-xs'
-        />
-
-        {titleImage && (
-          <div className='image-preview'>
-            <img
-              src={imagePreview}
-              alt='Preview'
-              className='w-full h-full object-cover'
+    <div className='add-blog-container'>
+      <form onSubmit={handleSubmit} className='flex add-blog-form'>
+        <div className='form-group'>
+          <label htmlFor='title'>Title:</label>
+          <input
+            type='text'
+            placeholder='Title'
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
+        <div className='form-group'>
+          <label htmlFor='titleImage'>Title Image:</label>
+          <div className='sub-form-group'>
+            <input
+              type='file'
+              placeholder='Title Image'
+              onChange={handleImageChange}
             />
+            {/* <label htmlFor=''>Image Preview: </label> */}
+            {titleImage && (
+              <div className='image-preview'>
+                <img
+                  src={imagePreview}
+                  alt='Preview'
+                  className='w-full h-full object-cover'
+                />
+              </div>
+            )}
           </div>
-        )}
-
+        </div>
         <RTE value={content} onChange={setContent} />
 
-        <button type='submit' className='btn btn-primary'>
+        <button type='submit' className='addblog-btn'>
           Add Blog
         </button>
       </form>

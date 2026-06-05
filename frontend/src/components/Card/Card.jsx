@@ -8,8 +8,9 @@ function Card({ id, title, imgSrc }) {
     <Link to={`blog/${id}`} className='card-link'>
       <div className='card'>
         <img src={imgSrc} alt='card' />
+
         <h3>
-          {title}
+          <span className='card-title'> {title}</span>
           <FontAwesomeIcon icon={faArrowRight} className='card-icone' />
         </h3>
         {/* <p>{description}</p> */}

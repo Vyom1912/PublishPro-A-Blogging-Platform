@@ -12,11 +12,13 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 router.get("/", getAllBlogs);
+router.post("/", authMiddleware, upload.single("titleImage"), createBlog);
+
 router.get("/my-blogs", authMiddleware, getMyBlogs);
+
 router.get("/:id", getBlogById);
 router.put("/:id", authMiddleware, upload.single("titleImage"), updateBlog);
 router.delete("/:id", authMiddleware, deleteBlog);
-router.post("/", authMiddleware, upload.single("titleImage"), createBlog);
 
 // router.put(
 //   "/profile-image",

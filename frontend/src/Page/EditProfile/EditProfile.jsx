@@ -53,6 +53,7 @@ function EditProfile() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log(res.data);
 
       setUser(res.data.user);
 
@@ -67,8 +68,8 @@ function EditProfile() {
   }
 
   return (
-    <div className='edit-profile-card'>
-      <form onSubmit={handleSubmit}>
+    <div className='edit-profile-card flex'>
+      <form onSubmit={handleSubmit} className='flex'>
         <div className='avatar-container'>
           <label htmlFor='profile-image'>
             <img src={imagePreview} alt='Profile' className='profile-avatar' />
@@ -87,7 +88,7 @@ function EditProfile() {
         </div>
 
         <div className='form-group'>
-          <label htmlFor='userName'>Name</label>
+          <label htmlFor='userName'>Name: </label>
 
           <input
             type='text'
@@ -103,7 +104,7 @@ function EditProfile() {
         </div>
 
         <div className='form-group'>
-          <label htmlFor='userEmail'>Email</label>
+          <label htmlFor='userEmail'>Email:</label>
 
           <input
             type='email'
@@ -119,7 +120,7 @@ function EditProfile() {
         </div>
 
         <div className='form-group'>
-          <label htmlFor='about'>About</label>
+          <label htmlFor='about'>About:</label>
 
           <textarea
             id='about'

@@ -18,6 +18,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    image: {
+      type: String,
+      default: "",
+    },
+
+    about: {
+      type: String,
+      default: "",
+    },
+
+    role: {
+      type: String,
+      default: "user",
+    },
   },
   {
     timestamps: true,

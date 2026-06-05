@@ -1,0 +1,92 @@
+.login {
+  /* width: 50%; */
+  width: 600px;
+  /* width: 100%; */
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  gap: 25px;
+  flex-direction: column;
+  border: 3px solid var(--text);
+  background-color: var(--secondary);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+.login .f-form {
+  width: 100%;
+  flex-direction: column;
+  gap: 17px;
+}
+.form-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: flex-start;
+  text-align: left;
+  /* margin-bottom: 20px; */
+}
+.form-group label {
+  font-weight: 600;
+  padding-left: 4px;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+.form-group input,
+.form-group textarea {
+  outline: none;
+  width: 100% !important;
+  padding: 5px 15px;
+  border-radius: 5px;
+  border: 1px solid var(--text);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  background: var(--bg);
+}
+
+.save-btn {
+  /* position: absolute; */
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  /* background: linear-gradient(90deg, #4f46e5, #3b82f6); */
+  background: var(--text);
+  color: var(--secondary);
+  transition: all 0.3s ease;
+}
+
+.save-btn:hover {
+  box-shadow: 0px 3px 10px #4d4d4d;
+  /* transform: translateY(-1px); */
+}
+@media (max-width: 786px) {
+  .login {
+    width: 480px;
+    padding: 20px 10px;
+  }
+  .save-btn {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 550px) {
+  .login {
+    padding: 10px;
+    width: 320px;
+  }
+
+  .form-group label {
+    /* padding-left: 8px; */
+  }
+  .form-group input,
+  .form-group textarea {
+    padding: 0px 8px;
+  }
+}
