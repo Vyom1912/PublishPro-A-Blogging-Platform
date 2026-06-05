@@ -41,9 +41,30 @@ function Profile() {
       console.log(error);
     }
   };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this blog?",
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await api.delete(`/blogs/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setMyBlogs((prev) => prev.filter((blog) => blog._id !== id));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
-      {/* <h1 className='text-3xl font-bold'>Profile</h1> */}
       <div className='container profile'>
         <div className='p-box flex'>
           <div className='profile-info-box flex '>
@@ -59,23 +80,11 @@ function Profile() {
             <div className='p-info flex'>
               <p className='p-info-name'>{user.name}</p>
               <div className='p-info-data'>
-                {/* <input
-                  type='email'
-                  value={user.email || ""}
-                  placeholder='Email'
-                  readOnly
-                /> */}
                 <p>{user.email || ""}</p>
               </div>
               <div className='p-info-data'>
                 <label htmlFor=''>About: </label>
-                {/* <textarea
-                  name='about'
-                  id='about'
-                  value={user.about || ""}
-                  placeholder='About'
-                  readOnly
-                /> */}
+
                 <p>{user.about || ""}</p>
               </div>
             </div>
@@ -86,7 +95,7 @@ function Profile() {
               Edit Profile
             </Link>
             <Link to='/edit-password' className='p-info-btn'>
-              Forgot Password
+              Edit Password
             </Link>
             <Link to='/login' className='p-info-btn' onClick={handleLogout}>
               {/* <button onClick={handleLogout} className='logout-btn navlink'> */}
@@ -100,32 +109,33 @@ function Profile() {
           <label htmlFor=''> Your Blogs: </label>
           <div className='profile-data '>
             {myblogs.map((blog) => (
-              <Card
-                key={blog._id}
-                id={blog._id}
-                title={blog.title}
-                imgSrc={blog.featuredImage}
-                content={blog.content}
-                author={user.name}
-              />
+              <div key={blog._id} className='my-blog-card flex'>
+                <Card
+                  id={blog._id}
+                  title={blog.title}
+                  imgSrc={blog.featuredImage}
+                  content={blog.content}
+                  author={user.name}
+                />
+                <div className='blog-actions flex'>
+                  <Link to={`blog/${blog._id}`} className='blog-actions-btn'>
+                    Open
+                  </Link>
+                  <Link
+                    to={`/edit-blog/${blog._id}`}
+                    className=' blog-actions-btn edit-btn'>
+                    Edit
+                  </Link>
+
+                  <button
+                    className='delete-btn blog-actions-btn'
+                    onClick={() => handleDelete(blog._id)}>
+                    Delete
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
-          {/* <Card
-            id='1'
-            title='website analytics'
-            imgSrc='https://picsum.photos/300/200'
-          />
-          <Card
-            id='2'
-            title='My Blogs'
-            imgSrc='https://picsum.photos/300/200'
-          />
-
-          <Card
-            id='3'
-            title='website analytics'
-            imgSrc='https://picsum.photos/300/200'
-          /> */}
         </div>
       </div>
     </div>

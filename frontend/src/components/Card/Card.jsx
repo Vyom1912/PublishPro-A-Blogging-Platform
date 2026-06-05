@@ -1,21 +1,21 @@
 // import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import "./Card.css";
 function Card({ id, title, imgSrc }) {
   return (
-    <Link to={`blog/${id}`} className='card-link'>
-      <div className='card'>
-        <img src={imgSrc} alt='card' />
+    // <Link to={`blog/${id}`} className='card-link'>
+    <div className='card'>
+      <img src={imgSrc} alt='card' />
 
-        <h3>
-          <span className='card-title'> {title}</span>
-          <FontAwesomeIcon icon={faArrowRight} className='card-icone' />
-        </h3>
-        {/* <p>{description}</p> */}
-      </div>
-    </Link>
+      <h3>
+        <span className='card-title'> {title}</span>
+        <FontAwesomeIcon icon={faArrowRight} className='card-icone' />
+      </h3>
+      {/* <p>{description}</p> */}
+    </div>
+    // </Link>
   );
 }
 

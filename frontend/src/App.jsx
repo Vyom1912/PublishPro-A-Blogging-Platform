@@ -11,7 +11,9 @@ import {
   Profile,
   EditProfile,
   BlogDetails,
-  MyBlog,
+  EditBlog,
+  EditPassword,
+  ForgotPassword,
 } from "./Page";
 import { Navbar } from "./components";
 function App() {
@@ -22,13 +24,18 @@ function App() {
 
         <Routes>
           <Route path='/' element={<Home />} />
-          <Route path='/blog/:id' element={<BlogDetails />} />
           <Route path='/add-blog' element={<AddBlog />} />
-          <Route path='/profile' element={<Profile />} />
+          <Route path='/blog/:id' element={<BlogDetails />} />
 
-          <Route path='/profile/blog' element={<MyBlog />} />
-          <Route path='/profile/blog/:id' element={<BlogDetails />} />
+          <Route path='/profile' element={<Profile />} />
           <Route path='/edit-profile' element={<EditProfile />} />
+
+          <Route path='/edit-password' element={<EditPassword />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+
+          <Route path='/profile/blog/:id' element={<BlogDetails />} />
+          <Route path='/edit-blog/:id' element={<EditBlog />} />
+
           <Route path='/login' element={<Login />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/logout' element={<Logout />} />
