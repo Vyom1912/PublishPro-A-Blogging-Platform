@@ -1,38 +1,70 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./EditPassword.css";
+import { InputBox } from "../../components";
+import api from "../../api/axios";
+
 function EditPassword() {
-  const [password, setPassword] = useState("");
-  const handleSubmit = (e) => {
+  const navigate = new useNavigate();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(password);
+
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await api.put(
+        "/users/change-password",
+        {
+          currentPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      alert(res.data.message);
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      navigate("/profile");
+    } catch (error) {
+      alert(error.response?.data?.message || "Something went wrong");
+    }
   };
   return (
     <div className='login edit-password flex'>
       <h1 className='text-3xl font-bold underline'>Change Password</h1>
 
       <form className='flex f-form' onSubmit={handleSubmit}>
-        {/* <p>To continue, first verify it’s you</p> */}
-        <div className='form-group'>
-          <label for='password'>Current Password: </label>
-          <input
-            type='password'
-            id='password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Enter cureent password......'
-          />
-        </div>
-        <div className='form-group'>
-          <label for='new-password'>New Password: </label>
-          <input
-            type='password'
-            id='new-password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Enter new password......'
-          />
-        </div>
+        <InputBox
+          label='Current Password'
+          type='password'
+          id='current-password'
+          value={currentPassword}
+          onChange={setCurrentPassword}
+          placeholder='Enter current password...'
+        />
+        <InputBox
+          label='New Password'
+          type='password'
+          id='new-password'
+          value={newPassword}
+          onChange={setNewPassword}
+          placeholder='Enter New password...'
+        />
         <div className='password-info'>
           <p>Password must:</p>
           <ul>
@@ -41,16 +73,16 @@ function EditPassword() {
             <li>Include uppercase and lowercase letters</li>
           </ul>
         </div>
-        <div className='form-group'>
-          <label for='re-password'>Re-write new Password: </label>
-          <input
-            type='password'
-            id='re-password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Re-write new password......'
-          />
-        </div>
+
+        <InputBox
+          label='Confirm Password'
+          type='password'
+          id='confirm-password'
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          placeholder='Re-Enter new password...'
+        />
+
         <button type='submit' className='save-btn'>
           Confirm
         </button>

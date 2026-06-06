@@ -52,6 +52,9 @@ function Login() {
             placeholder='Enter password......'
           />
         </div>
+        <label htmlFor=''>
+          <Link to='/forgot-password'>Forgot Password?</Link>
+        </label>
         <button type='submit' className='save-btn'>
           Login
         </button>

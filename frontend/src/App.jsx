@@ -14,6 +14,7 @@ import {
   EditBlog,
   EditPassword,
   ForgotPassword,
+  ResetPassword,
 } from "./Page";
 import { Navbar } from "./components";
 function App() {
@@ -32,6 +33,7 @@ function App() {
 
           <Route path='/edit-password' element={<EditPassword />} />
           <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
 
           <Route path='/profile/blog/:id' element={<BlogDetails />} />
           <Route path='/edit-blog/:id' element={<EditBlog />} />

@@ -176,27 +176,25 @@ export const deleteBlog = async (req, res) => {
     });
   }
 };
+export const searchBlogs = async (req, res) => {
+  try {
+    const { query } = req.query;
 
-// export const updateProfileImage = async (req, res) => {
-//   try {
-//     const result = await cloudinary.uploader.upload(req.file.path);
+    const blogs = await Blog.find({
+      title: {
+        $regex: query,
+        $options: "i",
+      },
+    }).populate("author", "name");
 
-//     const user = await User.findByIdAndUpdate(
-//       req.user.id,
-//       {
-//         image: result.secure_url,
-//       },
-//       { new: true },
-//     );
-
-//     res.json({
-//       success: true,
-//       user,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
+    res.json({
+      success: true,
+      blogs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

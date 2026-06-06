@@ -9,6 +9,7 @@ import Profile from "./Profile/Profile";
 import EditProfile from "./EditProfile/EditProfile";
 import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import EditPassword from "./EditPassword/EditPassword";
+import ResetPassword from "./ResetPassword/ResetPassword";
 export {
   Home,
   AddBlog,
@@ -21,4 +22,5 @@ export {
   EditBlog,
   ForgotPassword,
   EditPassword,
+  ResetPassword,
 };

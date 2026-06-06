@@ -26,7 +26,11 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      setUser(res.data.user);
+      // setUser(res.data.user);
+      setUser({
+        ...res.data.user,
+        id: res.data.user._id,
+      });
     } catch (error) {
       console.log(error);
 

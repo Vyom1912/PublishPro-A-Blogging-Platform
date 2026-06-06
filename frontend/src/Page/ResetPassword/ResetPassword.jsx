@@ -1,0 +1,46 @@
+import { useParams } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+
+function ResetPassword() {
+  const { token } = useParams();
+
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.post(
+        `http://localhost:5000/api/auth/reset-password/${token}`,
+        {
+          password,
+        },
+      );
+
+      setMessage(data.message);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Something went wrong");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Reset Password</h2>
+
+      <input
+        type='password'
+        placeholder='New Password'
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+
+      <button type='submit'>Reset Password</button>
+
+      {message && <p>{message}</p>}
+    </form>
+  );
+}
+
+export default ResetPassword;

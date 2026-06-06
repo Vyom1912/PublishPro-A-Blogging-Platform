@@ -4,6 +4,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import commentRoutes from "./routes/commentRoutes.js";
 const app = express();
 
 connectDB();
@@ -21,6 +22,8 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/comments", commentRoutes);
+
 app.listen(process.env.PORT, () => {
   console.log("server at http://localhost:5000");
 });

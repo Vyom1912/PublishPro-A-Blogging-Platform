@@ -6,17 +6,22 @@ import {
   getMyBlogs,
   updateBlog,
   deleteBlog,
+  searchBlogs,
 } from "../controllers/blogController.js";
 import upload from "../middleware/uploadImage.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 router.get("/", getAllBlogs);
-router.post("/", authMiddleware, upload.single("titleImage"), createBlog);
+
+router.get("/search", searchBlogs);
 
 router.get("/my-blogs", authMiddleware, getMyBlogs);
 
 router.get("/:id", getBlogById);
+
+router.post("/", authMiddleware, upload.single("titleImage"), createBlog);
+
 router.put("/:id", authMiddleware, upload.single("titleImage"), updateBlog);
 router.delete("/:id", authMiddleware, deleteBlog);
 
