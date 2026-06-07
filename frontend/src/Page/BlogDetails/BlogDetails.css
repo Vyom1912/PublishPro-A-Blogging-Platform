@@ -61,3 +61,18 @@
     height: 160px;
   }
 }
+
+/* Blog Like */
+.blog-like-box {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 15px 0;
+}
+
+.blog-like-box button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.8rem;
+}

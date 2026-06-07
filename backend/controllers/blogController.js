@@ -198,3 +198,39 @@ export const searchBlogs = async (req, res) => {
     });
   }
 };
+
+export const toggleLike = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    const alreadyLiked = blog.likes.includes(req.user.id);
+
+    if (alreadyLiked) {
+      blog.likes = blog.likes.filter(
+        (userId) => userId.toString() !== req.user.id,
+      );
+    } else {
+      blog.likes.push(req.user.id);
+    }
+
+    await blog.save();
+
+    res.json({
+      success: true,
+      likesCount: blog.likes.length,
+      liked: !alreadyLiked,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

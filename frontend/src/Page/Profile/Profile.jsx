@@ -94,6 +94,9 @@ function Profile() {
             <Link to='/edit-profile' className='p-info-btn'>
               Edit Profile
             </Link>
+            <Link to='/saved-blogs' className='p-info-btn'>
+              Saved Blogs
+            </Link>
             <Link to='/edit-password' className='p-info-btn'>
               Edit Password
             </Link>

@@ -79,3 +79,76 @@ export const changePassword = async (req, res) => {
     });
   }
 };
+
+export const toggleBookmark = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const blogId = req.params.blogId;
+
+    const alreadySaved = user.savedBlogs.includes(blogId);
+
+    if (alreadySaved) {
+      user.savedBlogs = user.savedBlogs.filter(
+        (id) => id.toString() !== blogId,
+      );
+
+      await user.save();
+
+      return res.json({
+        success: true,
+        bookmarked: false,
+      });
+    }
+
+    user.savedBlogs.push(blogId);
+
+    await user.save();
+
+    res.json({
+      success: true,
+      bookmarked: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getSavedBlogs = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate("savedBlogs");
+
+    res.json({
+      success: true,
+      blogs: user.savedBlogs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getBookmarkStatus = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const bookmarked = user.savedBlogs.some(
+      (id) => id.toString() === req.params.blogId,
+    );
+
+    res.json({
+      success: true,
+      bookmarked,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

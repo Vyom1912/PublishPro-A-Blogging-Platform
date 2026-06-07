@@ -32,6 +32,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "user",
     },
+
+    savedBlogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blog",
+      },
+    ],
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
   },

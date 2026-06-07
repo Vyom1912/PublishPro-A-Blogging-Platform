@@ -7,6 +7,7 @@ import {
   updateBlog,
   deleteBlog,
   searchBlogs,
+  toggleLike,
 } from "../controllers/blogController.js";
 import upload from "../middleware/uploadImage.js";
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -21,6 +22,8 @@ router.get("/my-blogs", authMiddleware, getMyBlogs);
 router.get("/:id", getBlogById);
 
 router.post("/", authMiddleware, upload.single("titleImage"), createBlog);
+
+router.put("/:id/like", authMiddleware, toggleLike);
 
 router.put("/:id", authMiddleware, upload.single("titleImage"), updateBlog);
 router.delete("/:id", authMiddleware, deleteBlog);
