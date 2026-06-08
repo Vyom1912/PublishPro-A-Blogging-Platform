@@ -3,14 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function Logout() {
-  const navigate = useNavigate();
-  const { setUser } = useAuth();
+  const navigate    = useNavigate();
+  const { logout }  = useAuth();
 
   useEffect(() => {
-    localStorage.removeItem("token");
-    setUser(null);
-
-    navigate("/login");
+    // Clear auth token and user state via the shared logout helper
+    logout();
+    // Also clear sessionStorage so view-dedup keys don't linger
+    sessionStorage.clear();
+    navigate("/login", { replace: true });
   }, []);
 
   return null;

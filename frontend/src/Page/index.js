@@ -1,28 +1,23 @@
-import Home from "./Home/Home";
-import AddBlog from "./AddBlog/AddBlog";
-import Login from "./Login/Login";
-import SignUp from "./SignUp/SignUp";
-import Logout from "./Logout/Logout";
-import BlogDetails from "./BlogDetails/BlogDetails";
-import EditBlog from "./EditBlog/EditBlog";
-import Profile from "./Profile/Profile";
-import EditProfile from "./EditProfile/EditProfile";
+import Home          from "./Home/Home";
+import AddBlog        from "./AddBlog/AddBlog";
+import Login          from "./Login/Login";
+import SignUp         from "./SignUp/SignUp";
+import Logout         from "./Logout/Logout";
+import BlogDetails    from "./BlogDetails/BlogDetails";
+import EditBlog       from "./EditBlog/EditBlog";
 import ForgotPassword from "./ForgotPassword/ForgotPassword";
-import EditPassword from "./EditPassword/EditPassword";
-import ResetPassword from "./ResetPassword/ResetPassword";
-import SavedBlogs from "./SavedBlogs/SavedBlogs";
+import ResetPassword  from "./ResetPassword/ResetPassword";
+import Dashboard      from "./Dashboard/Dashboard";
+
 export {
   Home,
   AddBlog,
   Login,
   SignUp,
-  Profile,
-  EditProfile,
   Logout,
   BlogDetails,
   EditBlog,
   ForgotPassword,
-  EditPassword,
   ResetPassword,
-  SavedBlogs,
+  Dashboard,
 };

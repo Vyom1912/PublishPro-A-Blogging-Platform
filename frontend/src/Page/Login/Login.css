@@ -1,92 +1,86 @@
-.login {
-  /* width: 50%; */
-  width: 600px;
-  /* width: 100%; */
-  margin: 30px auto;
-  padding: 20px;
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
-  gap: 25px;
-  flex-direction: column;
-  border: 3px solid var(--text);
-  background-color: var(--secondary);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-}
-.login .f-form {
-  width: 100%;
-  flex-direction: column;
-  gap: 17px;
-}
-.form-group {
-  width: 100%;
+/* Shared auth layout used by Login & SignUp */
+.auth-page {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  justify-content: flex-start;
-  text-align: left;
-  /* margin-bottom: 20px; */
-}
-.form-group label {
-  font-weight: 600;
-  padding-left: 4px;
-  letter-spacing: 1px;
-  color: var(--text);
-}
-.form-group input,
-.form-group textarea {
-  outline: none;
-  width: 100% !important;
-  padding: 5px 15px;
-  border-radius: 5px;
-  border: 1px solid var(--text);
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100svh - 70px);
+  padding: 24px 16px;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  background: var(--bg);
-}
-
-.save-btn {
-  /* position: absolute; */
+.auth-card {
   width: 100%;
-  padding: 14px;
+  max-width: 440px;
+}
+
+.auth-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-decoration: underline;
+  margin-bottom: 20px;
+}
+
+.auth-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.auth-sub {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.auth-forgot {
+  text-align: right;
+  font-size: 0.82rem;
+  margin-top: -8px;
+}
+.auth-forgot a { color: var(--primary); font-weight: 600; }
+.auth-forgot a:hover { text-decoration: underline; }
+
+.auth-switch {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+.auth-switch a { color: var(--primary); font-weight: 600; }
+.auth-switch a:hover { text-decoration: underline; }
+
+/* ── Shared password-input row (ResetPassword + ForgotPassword) ── */
+.rp-input-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.rp-input-row input {
+  /* form-field input styles already apply; just handle the eye padding */
+  padding-right: 44px !important;
+  width: 100%;
+}
+.rp-eye-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
   border: none;
-  border-radius: 12px;
-  font-weight: 600;
   cursor: pointer;
-  /* background: linear-gradient(90deg, #4f46e5, #3b82f6); */
-  background: var(--text);
-  color: var(--secondary);
-  transition: all 0.3s ease;
+  font-size: 1rem;
+  color: var(--text-muted);
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s;
 }
+.rp-eye-btn:hover { color: var(--text); }
 
-.save-btn:hover {
-  box-shadow: 0px 3px 10px #4d4d4d;
-  /* transform: translateY(-1px); */
-}
-@media (max-width: 786px) {
-  .login {
-    width: 480px;
-    padding: 20px 10px;
-  }
-  .save-btn {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 550px) {
-  .login {
-    padding: 10px;
-    width: 320px;
-  }
-
-  .form-group label {
-    /* padding-left: 8px; */
-  }
-  .form-group input,
-  .form-group textarea {
-    padding: 0px 8px;
-  }
+.rp-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 13px;
+  line-height: 1.5;
 }

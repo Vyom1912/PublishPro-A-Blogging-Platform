@@ -152,3 +152,24 @@ export const getBookmarkStatus = async (req, res) => {
     });
   }
 };
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("savedBlogs");
+    const Blog = (await import("../models/Blog.js")).default;
+
+    const myBlogs = await Blog.find({ author: req.user.id }).select("likes views");
+
+    const totalBlogs = myBlogs.length;
+    const totalLikes = myBlogs.reduce((sum, b) => sum + b.likes.length, 0);
+    const totalViews = myBlogs.reduce((sum, b) => sum + (b.views || 0), 0);
+    const totalSaved = user.savedBlogs.length;
+
+    res.json({
+      success: true,
+      stats: { totalBlogs, totalLikes, totalViews, totalSaved },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

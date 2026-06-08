@@ -7,6 +7,7 @@ import {
   toggleBookmark,
   getSavedBlogs,
   getBookmarkStatus,
+  getDashboardStats,
 } from "../controllers/userController.js";
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.post("/bookmark/:blogId", authMiddleware, toggleBookmark);
 router.get("/bookmark-status/:blogId", authMiddleware, getBookmarkStatus);
 
 router.get("/saved-blogs", authMiddleware, getSavedBlogs);
+router.get("/dashboard-stats", authMiddleware, getDashboardStats);
 
 export default router;

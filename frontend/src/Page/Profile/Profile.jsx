@@ -28,14 +28,7 @@ function Profile() {
   };
   const getMyBlogs = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.get("/blogs/my-blogs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const res = await api.get("/blogs/my-blogs");
       setMyBlogs(res.data.blogs);
     } catch (error) {
       console.log(error);
@@ -50,14 +43,7 @@ function Profile() {
     if (!confirmDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
-
-      await api.delete(`/blogs/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await api.delete(`/blogs/${id}`);
       setMyBlogs((prev) => prev.filter((blog) => blog._id !== id));
     } catch (error) {
       console.log(error);
