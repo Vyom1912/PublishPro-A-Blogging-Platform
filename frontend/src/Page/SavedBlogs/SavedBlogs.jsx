@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import api from "../../api/axios";
+import { Link } from "react-router-dom";
 import { Card } from "../../components";
 
 function SavedBlogs() {
-  const [blogs, setBlogs] = useState([]);
+  const [savedBlogs, setSavedBlogs] = useState([]);
 
   useEffect(() => {
     fetchSavedBlogs();
@@ -19,8 +20,6 @@ function SavedBlogs() {
         },
       });
 
-      console.log(res.data); // <-- check this
-
       setSavedBlogs(res.data.blogs);
     } catch (error) {
       console.log(error);
@@ -32,13 +31,14 @@ function SavedBlogs() {
       <h1>Saved Blogs</h1>
 
       <div className='profile-data'>
-        {blogs.map((blog) => (
-          <Card
-            key={blog._id}
-            id={blog._id}
-            title={blog.title}
-            imgSrc={blog.featuredImage}
-          />
+        {savedBlogs.map((blog) => (
+          <Link key={blog._id} to={`/blog/${blog._id}`} className='card-link'>
+            <Card
+              id={blog._id}
+              title={blog.title}
+              imgSrc={blog.featuredImage}
+            />
+          </Link>
         ))}
       </div>
     </div>

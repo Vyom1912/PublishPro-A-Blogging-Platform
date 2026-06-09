@@ -234,3 +234,33 @@ export const toggleLike = async (req, res) => {
     });
   }
 };
+export const viewBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+      return res.status(404).json({
+        message: "Blog not found",
+      });
+    }
+
+    const userId = req.user.id;
+
+    const alreadyViewed = blog.viewedBy.includes(userId);
+
+    if (!alreadyViewed) {
+      blog.views += 1;
+      blog.viewedBy.push(userId);
+
+      await blog.save();
+    }
+
+    res.status(200).json({
+      views: blog.views,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};

@@ -20,12 +20,15 @@ function BlogDetails() {
 
   const [bookmarked, setBookmarked] = useState(false);
 
+  const [countView, setCountView] = useState(0);
+
   useEffect(() => {
     fetchBlog();
 
     if (user) {
       fetchBookmarkStatus();
     }
+    handleView();
   }, [id, user]);
 
   const fetchBlog = async () => {
@@ -91,6 +94,8 @@ function BlogDetails() {
         },
       );
 
+      console.log("saved", res.data);
+
       setBookmarked(res.data.bookmarked);
     } catch (error) {
       console.log(error);
@@ -115,14 +120,28 @@ function BlogDetails() {
     }
   };
 
+  const handleView = async () => {
+    const token = localStorage.getItem("token");
+
+    const res = await api.patch(
+      `/blogs/${id}/view`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    setCountView(res.data.views);
+  };
   if (!blog) {
     return <h2>Loading...</h2>;
   }
   return (
     <div className='blog-container'>
-      {/* <h1 className='text-3xl font-bold underline'>Blog Details</h1> */}
-      {/* <p>Blog ID: {id}</p> */}
       <BackButton />
+      <p>views: {countView}</p>
       <h1 className='blog-title'>{blog.title}</h1>
       <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
       <p className='blog-auther'>Author: {blog.author?.name}</p>
@@ -135,11 +154,11 @@ function BlogDetails() {
       <button className='bookmark-btn' onClick={handleBookmark}>
         {bookmarked ? (
           <>
-            <FontAwesomeIcon icon={farBookmark} /> Save
+            <FontAwesomeIcon icon={faBookmark} /> Saved
           </>
         ) : (
           <>
-            <FontAwesomeIcon icon={faBookmark} /> Saved
+            <FontAwesomeIcon icon={farBookmark} /> Save
           </>
         )}
       </button>

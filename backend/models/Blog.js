@@ -27,6 +27,16 @@ const blogSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    views: {
+      type: Number,
+      default: 0,
+    },
+    viewedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true },
 );
