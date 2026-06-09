@@ -1,161 +1,154 @@
+// import React from "react";
 import "./BlogDetails.css";
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import api from "../../api/axios";
 import { BackButton, Comments } from "../../components";
+import "./BlogDetails.css";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookmark as farBookmark } from "@fortawesome/free-regular-svg-icons";
 import { faBookmark } from "@fortawesome/free-solid-svg-icons";
-import { addToReadingHistory } from "../Dashboard/Dashboard";
 
 function BlogDetails() {
-  const { user, loading: authLoading } = useAuth();
-  const { id }   = useParams();
+  const { user } = useAuth();
+  const { id } = useParams();
+  const [blog, setBlog] = useState(null);
 
-  const [blog, setBlog]           = useState(null);
-  const [liked, setLiked]         = useState(false);
+  const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+
   const [bookmarked, setBookmarked] = useState(false);
 
-  /* Fetch the blog once; the view count increments server-side on each GET */
   useEffect(() => {
     fetchBlog();
-  }, [id]);
 
-  /* Re-derive like/bookmark state whenever user or blog changes.
-     Wait until auth is done loading — otherwise user is null for a
-     split second and we reset liked/bookmarked to false incorrectly. */
-  useEffect(() => {
-    if (authLoading) return;   // auth still initialising, wait
-    if (!blog) return;
     if (user) {
-      const uid = user._id || user.id;
-      setLiked(!!blog.likes?.some((l) => l.toString() === uid.toString()));
       fetchBookmarkStatus();
-    } else {
-      setLiked(false);
-      setBookmarked(false);
     }
-  }, [user, authLoading, blog]);
+  }, [id, user]);
 
   const fetchBlog = async () => {
     try {
       const res = await api.get(`/blogs/${id}`);
-      const data = res.data;
-      setBlog(data);
-      setLikesCount(data.likes?.length || 0);
+      setBlog(res.data);
 
-      // Add to reading history for the Dashboard History tab
-      addToReadingHistory(id);
+      setLikesCount(res.data.likes?.length || 0);
 
-      // Record this visit as a view — every visit counts
-      // (sessionStorage dedup removed: same user re-watching = real view)
-      api.post(`/blogs/${id}/view`)
-        .then((r) => {
-          // Reflect the updated count immediately in the UI
-          setBlog((prev) => prev ? { ...prev, views: r.data.views } : prev);
-        })
-        .catch(() => {});
-    } catch (e) { console.log(e); }
+      // setLiked(
+      //   res.data.likes?.includes(user?._id) ||
+      //     res.data.likes?.includes(user?.id),
+      // );
+      if (user) {
+        setLiked(
+          res.data.likes?.some(
+            (userId) => userId.toString() === (user._id || user.id),
+          ),
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleLike = async () => {
-    if (!user) { alert("Please log in to like blogs"); return; }
     try {
-      const res = await api.put(`/blogs/${id}/like`, {});
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please login first");
+        return;
+      }
+
+      const res = await api.put(
+        `/blogs/${id}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       setLiked(res.data.liked);
       setLikesCount(res.data.likesCount);
-    } catch (e) { console.log(e); }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleBookmark = async () => {
-    if (!user) { alert("Please log in to save blogs"); return; }
     try {
-      const res = await api.post(`/users/bookmark/${id}`, {});
+      const token = localStorage.getItem("token");
+
+      const res = await api.post(
+        `/users/bookmark/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       setBookmarked(res.data.bookmarked);
-    } catch (e) { console.log(e); }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const fetchBookmarkStatus = async () => {
     try {
-      const res = await api.get(`/users/bookmark-status/${id}`);
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      const res = await api.get(`/users/bookmark-status/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       setBookmarked(res.data.bookmarked);
-    } catch (e) { console.log(e); }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (!blog) {
-    return (
-      <div className="loading-center" style={{ minHeight: "60vh" }}>
-        <div className="spinner" />
-        <p>Loading…</p>
-      </div>
-    );
+    return <h2>Loading...</h2>;
   }
-
   return (
-    <article className="blog-container">
+    <div className='blog-container'>
+      {/* <h1 className='text-3xl font-bold underline'>Blog Details</h1> */}
+      {/* <p>Blog ID: {id}</p> */}
       <BackButton />
+      <h1 className='blog-title'>{blog.title}</h1>
+      <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
+      <p className='blog-auther'>Author: {blog.author?.name}</p>
+      <div className='blog-like-box'>
+        <button onClick={handleLike}>{liked ? "❤️" : "🤍"}</button>
 
-      {/* Featured image */}
-      <div className="blog-hero-img">
-        <img src={blog.featuredImage} alt={blog.title} />
+        <span>{likesCount} Likes</span>
       </div>
 
-      {/* Title */}
-      <h1 className="blog-title">{blog.title}</h1>
-
-      {/* Meta row: author + date + views */}
-      <div className="blog-meta">
-        <Link to={`/author/${blog.author?._id}`} className="blog-author-link">
-          <div className="blog-author-avatar">
-            {blog.author?.image ? (
-              <img src={blog.author.image} alt={blog.author.name} />
-            ) : (
-              <span>{blog.author?.name?.charAt(0).toUpperCase()}</span>
-            )}
-          </div>
-          <span>{blog.author?.name}</span>
-        </Link>
-
-        <span className="blog-meta-sep">·</span>
-        <span className="blog-meta-item">
-          {new Date(blog.createdAt).toLocaleDateString("en-US", {
-            year: "numeric", month: "short", day: "numeric",
-          })}
-        </span>
-        <span className="blog-meta-sep">·</span>
-        <span className="blog-meta-item">👁️ {blog.views ?? 0} views</span>
-      </div>
-
-      {/* Action buttons */}
-      <div className="blog-actions-row">
-        <button
-          className={`blog-action-btn${liked ? " active" : ""}`}
-          onClick={handleLike}
-          aria-label="Like"
-        >
-          <span>{liked ? "❤️" : "🤍"}</span>
-          <span>{likesCount} {likesCount === 1 ? "Like" : "Likes"}</span>
-        </button>
-
-        <button
-          className={`blog-action-btn${bookmarked ? " active" : ""}`}
-          onClick={handleBookmark}
-          aria-label={bookmarked ? "Remove bookmark" : "Save"}
-        >
-          <FontAwesomeIcon icon={bookmarked ? faBookmark : farBookmark} />
-          <span>{bookmarked ? "Saved" : "Save"}</span>
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="blog-content">
-        <div dangerouslySetInnerHTML={{ __html: blog.content }} />
-      </div>
-
+      <button className='bookmark-btn' onClick={handleBookmark}>
+        {bookmarked ? (
+          <>
+            <FontAwesomeIcon icon={farBookmark} /> Save
+          </>
+        ) : (
+          <>
+            <FontAwesomeIcon icon={faBookmark} /> Saved
+          </>
+        )}
+      </button>
+      <p className='blog-content'>
+        {/* {blog.content} */}
+        <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
+      </p>
       <Comments />
-    </article>
+    </div>
   );
 }
 

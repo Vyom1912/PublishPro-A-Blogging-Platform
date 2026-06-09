@@ -1,113 +1,62 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { Card } from "../../components";
 import api from "../../api/axios.js";
-import { useSearch } from "../../context/SearchContext";
 import "./Home.css";
-
-const PAGE_SIZE = 12;
-
+import { Link } from "react-router-dom";
+import { useSearch } from "../../context/SearchContext";
 function Home() {
   const { searchQuery } = useSearch();
-
-  const [blogs, setBlogs]           = useState([]);
-  const [page, setPage]             = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading]       = useState(true);
-
-  /* Reset to page 1 whenever search changes */
-  useEffect(() => {
-    setPage(1);
-  }, [searchQuery]);
+  const [blogs, setBlogs] = useState([]);
 
   useEffect(() => {
     if (searchQuery.trim()) {
       searchBlogs();
     } else {
-      fetchBlogs(page);
+      fetchBlogs();
     }
-  }, [searchQuery, page]);
-
-  const fetchBlogs = async (p = 1) => {
-    setLoading(true);
-    try {
-      const res = await api.get(`/blogs?page=${p}&limit=${PAGE_SIZE}`);
-      setBlogs(res.data.blogs);
-      setTotalPages(res.data.totalPages || 1);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [searchQuery]);
 
   const searchBlogs = async () => {
-    setLoading(true);
     try {
-      const res = await api.get(`/blogs/search?query=${encodeURIComponent(searchQuery)}`);
+      const res = await api.get(`/blogs/search?query=${searchQuery}`);
+
       setBlogs(res.data.blogs);
-      setTotalPages(1);
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchBlogs = async () => {
+    try {
+      const res = await api.get("/blogs");
+      // console.log(res.data);
+      console.log(Array.isArray(res.data.blogs));
+      console.log(res.data.blogs);
+      setBlogs(res.data.blogs);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   return (
-    <div className="home-container">
-      {/* Grid */}
-      <div className="home-blogs-box">
-        {loading ? (
-          <div className="home-empty">
-            <div className="spinner" style={{ margin: "0 auto 12px" }} />
-            <p>Loading blogs…</p>
-          </div>
-        ) : blogs.length === 0 ? (
-          <p className="home-empty">No blogs found.</p>
+    <div className='home-container'>
+      <div className='home-blogs-box'>
+        {blogs.length === 0 ? (
+          <h2>No blogs found</h2>
         ) : (
           blogs.map((blog) => (
-            <Link to={`/blog/${blog._id}`} key={blog._id} className="card-link">
+            <Link to={`blog/${blog._id}`} className='card-link'>
               <Card
+                key={blog._id}
                 id={blog._id}
                 title={blog.title}
                 imgSrc={blog.featuredImage}
+                content={blog.content}
+                author={blog.author?.name}
               />
             </Link>
           ))
         )}
       </div>
-
-      {/* Pagination – only shown when not searching */}
-      {!searchQuery.trim() && totalPages > 1 && (
-        <div className="home-pagination">
-          <button
-            className="page-btn"
-            onClick={() => setPage((p) => p - 1)}
-            disabled={page <= 1}
-          >
-            ← Prev
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
-            <button
-              key={n}
-              className={`page-btn${n === page ? " active" : ""}`}
-              onClick={() => setPage(n)}
-            >
-              {n}
-            </button>
-          ))}
-
-          <button
-            className="page-btn"
-            onClick={() => setPage((p) => p + 1)}
-            disabled={page >= totalPages}
-          >
-            Next →
-          </button>
-        </div>
-      )}
     </div>
   );
 }

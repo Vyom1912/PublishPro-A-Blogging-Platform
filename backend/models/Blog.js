@@ -13,6 +13,7 @@ const blogSchema = new mongoose.Schema(
     },
     featuredImage: {
       type: String,
+      imageUrl: String,
       default: "",
     },
     author: {
@@ -26,13 +27,9 @@ const blogSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    views: {
-      type: Number,
-      default: 0,
-    },
   },
   { timestamps: true },
 );
-
 const Blog = mongoose.model("Blog", blogSchema);
+
 export default Blog;
