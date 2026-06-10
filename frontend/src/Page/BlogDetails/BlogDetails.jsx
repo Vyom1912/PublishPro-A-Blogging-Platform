@@ -1,7 +1,7 @@
 // import React from "react";
 import "./BlogDetails.css";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { BackButton, Comments } from "../../components";
 import "./BlogDetails.css";
@@ -144,7 +144,11 @@ function BlogDetails() {
       <p>views: {countView}</p>
       <h1 className='blog-title'>{blog.title}</h1>
       <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
-      <p className='blog-auther'>Author: {blog.author?.name}</p>
+
+      <Link to={`/author/${blog.author?._id}`}>
+        <p className='blog-auther'>Author: {blog.author?.name}</p>
+      </Link>
+
       <div className='blog-like-box'>
         <button onClick={handleLike}>{liked ? "❤️" : "🤍"}</button>
 

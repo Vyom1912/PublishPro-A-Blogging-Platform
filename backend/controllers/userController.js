@@ -7,9 +7,9 @@ import cloudinary from "../config/cloudinary.js";
 // import {navigation} from
 export const updateProfile = async (req, res) => {
   try {
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
-    console.log("USER:", req.user);
+    // console.log("BODY:", req.body);
+    // console.log("FILE:", req.file);
+    // console.log("USER:", req.user);
     let imageUrl;
 
     if (req.file) {

@@ -9,7 +9,9 @@ import {
   searchBlogs,
   toggleLike,
   viewBlog,
+  getAutherInfo,
 } from "../controllers/blogController.js";
+
 import upload from "../middleware/uploadImage.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -19,6 +21,8 @@ router.get("/", getAllBlogs);
 router.get("/search", searchBlogs);
 
 router.get("/my-blogs", authMiddleware, getMyBlogs);
+
+router.get("/author/:id", getAutherInfo);
 
 router.get("/:id", getBlogById);
 

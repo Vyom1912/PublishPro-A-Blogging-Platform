@@ -16,6 +16,7 @@ import {
   ForgotPassword,
   ResetPassword,
   SavedBlogs,
+  AuthorProfile,
 } from "./Page";
 import { Navbar } from "./components";
 function App() {
@@ -32,6 +33,8 @@ function App() {
           <Route path='/saved-blogs' element={<SavedBlogs />} />
 
           <Route path='/profile' element={<Profile />} />
+          <Route path='/author/:id' element={<AuthorProfile />} />
+
           <Route path='/edit-profile' element={<EditProfile />} />
 
           <Route path='/edit-password' element={<EditPassword />} />

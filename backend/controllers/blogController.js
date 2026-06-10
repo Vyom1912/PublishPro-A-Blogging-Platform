@@ -14,7 +14,7 @@ export const createBlog = async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    console.log(req.user);
+    // console.log(req.user);
     const blog = await Blog.create({
       title,
       content,
@@ -76,7 +76,7 @@ export const getBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id).populate(
       "author",
-      "name email",
+      "_id name email",
     );
 
     if (!blog) {
@@ -190,6 +190,40 @@ export const searchBlogs = async (req, res) => {
     res.json({
       success: true,
       blogs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const getAutherInfo = async (req, res) => {
+  try {
+    const author = await User.findById(req.params.id).select(
+      "name email image about createdAt",
+    );
+
+    if (!author) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Author not found" });
+    }
+
+    const blogs = await Blog.find({ author: req.params.id })
+      .sort({ createdAt: -1 })
+      .select("title featuredImage likes views createdAt");
+
+    res.json({
+      success: true,
+      author,
+      blogs,
+      stats: {
+        totalBlogs: blogs.length,
+        // totalLikes,
+        // totalViews,
+      },
     });
   } catch (error) {
     res.status(500).json({

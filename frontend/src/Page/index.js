@@ -11,6 +11,7 @@ import ForgotPassword from "./ForgotPassword/ForgotPassword";
 import EditPassword from "./EditPassword/EditPassword";
 import ResetPassword from "./ResetPassword/ResetPassword";
 import SavedBlogs from "./SavedBlogs/SavedBlogs";
+import AuthorProfile from "./AuthorProfile/AuthorProfile";
 export {
   Home,
   AddBlog,
@@ -25,4 +26,5 @@ export {
   EditPassword,
   ResetPassword,
   SavedBlogs,
+  AuthorProfile,
 };
