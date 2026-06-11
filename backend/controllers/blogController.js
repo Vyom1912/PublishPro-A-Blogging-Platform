@@ -215,14 +215,17 @@ export const getAutherInfo = async (req, res) => {
       .sort({ createdAt: -1 })
       .select("title featuredImage likes views createdAt");
 
+    const totalLikes = blogs.reduce((sum, b) => sum + b.likes.length, 0);
+    const totalViews = blogs.reduce((sum, b) => sum + b.views, 0);
+
     res.json({
       success: true,
       author,
       blogs,
       stats: {
         totalBlogs: blogs.length,
-        // totalLikes,
-        // totalViews,
+        totalLikes,
+        totalViews,
       },
     });
   } catch (error) {

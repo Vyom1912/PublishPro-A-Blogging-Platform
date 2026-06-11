@@ -110,7 +110,7 @@ export const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    console.log(token);
+    // console.log(token);
     res.status(200).json({
       success: true,
       message: "Login route working",
@@ -143,7 +143,7 @@ export const getMe = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   try {
     // console.log("step:1");
-    console.log("Request Body:", req.body);
+    // console.log("Request Body:", req.body);
 
     const { email } = req.body;
     // console.log("step:2");

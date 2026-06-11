@@ -47,3 +47,33 @@
     row-gap: 25px;
   }
 }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 30px 0;
+}
+
+.pagination button {
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.pagination button:hover {
+  background: #f3f4f6;
+}
+
+.active-page {
+  background: #2563eb !important;
+  color: white;
+  border-color: #2563eb;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

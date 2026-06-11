@@ -1,9 +1,11 @@
 // import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { RTE } from "../../components";
 import api from "../../api/axios";
 import "./AddBlog.css";
 function AddBlog() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [titleImage, setTitleImage] = useState(null);
   // const [featuredImage, setFeaturedImage] = useState("");
@@ -45,6 +47,7 @@ function AddBlog() {
       setTitleImage(null);
       setImagePreview("");
       setContent("");
+      navigate("/");
     } catch (error) {
       console.error(error);
     }

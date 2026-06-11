@@ -8,6 +8,9 @@ function Home() {
   const { searchQuery } = useSearch();
   const [blogs, setBlogs] = useState([]);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 10;
+
   useEffect(() => {
     if (searchQuery.trim()) {
       searchBlogs();
@@ -21,6 +24,7 @@ function Home() {
       const res = await api.get(`/blogs/search?query=${searchQuery}`);
 
       setBlogs(res.data.blogs);
+      setCurrentPage(1);
     } catch (error) {
       console.log(error);
     }
@@ -37,16 +41,22 @@ function Home() {
     }
   };
 
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+
+  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
+
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+
   return (
     <div className='home-container'>
       <div className='home-blogs-box'>
         {blogs.length === 0 ? (
           <h2>No blogs found</h2>
         ) : (
-          blogs.map((blog) => (
-            <Link to={`blog/${blog._id}`} className='card-link'>
+          currentBlogs.map((blog) => (
+            <Link to={`blog/${blog._id}`} key={blog._id} className='card-link'>
               <Card
-                key={blog._id}
                 id={blog._id}
                 title={blog.title}
                 imgSrc={blog.featuredImage}
@@ -56,6 +66,28 @@ function Home() {
             </Link>
           ))
         )}
+      </div>
+      <div className='pagination'>
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}>
+          Previous
+        </button>
+
+        {[...Array(totalPages)].map((_, index) => (
+          <button
+            key={index}
+            className={currentPage === index + 1 ? "active-page" : ""}
+            onClick={() => setCurrentPage(index + 1)}>
+            {index + 1}
+          </button>
+        ))}
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}>
+          Next
+        </button>
       </div>
     </div>
   );
