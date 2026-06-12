@@ -1,10 +1,12 @@
 .profile {
   width: 75%;
-  margin: 30px auto 0;
+  margin: 30px auto;
   /* padding: 20px; */
+  border-radius: 10px;
   border-top-left-radius: 100px;
   border-top-right-radius: 100px;
   overflow: hidden;
+  border: 2px solid var(--primary);
 }
 .p-box {
   flex-direction: column;
@@ -84,7 +86,6 @@
   align-items: flex-start;
   flex-direction: column;
   gap: 20px;
-  border: 2px solid var(--primary);
 }
 .profile-data-box label {
   width: 100%;
@@ -109,6 +110,7 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
+  transition: all 0.5s ease;
 }
 .my-blog-card {
   width: 250px;
@@ -118,6 +120,7 @@
   border-radius: 6px;
   background: var(--secondary);
   overflow: hidden;
+  transition: all 0.5s ease;
 }
 .my-blog-card .card-link {
   margin: auto;

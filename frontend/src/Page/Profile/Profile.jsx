@@ -15,7 +15,7 @@ function Profile() {
 
   const [myblogs, setMyBlogs] = useState([]);
   const [savedBlogs, setSavedBlogs] = useState([]);
-  const [activeTab, setActiveTab] = useState("myBlogs");
+  const [activeBlogTab, setActiveBlogTab] = useState("myBlogs");
   useEffect(() => {
     if (user) {
       getMyBlogs();
@@ -112,16 +112,14 @@ function Profile() {
             <Link to='/edit-profile' className='p-info-btn'>
               Edit Profile
             </Link>
-            <Link to='/saved-blogs' className='p-info-btn'>
+            {/* <Link to='/saved-blogs' className='p-info-btn'>
               Saved Blogs
-            </Link>
+            </Link> */}
             <Link to='/edit-password' className='p-info-btn'>
               Edit Password
             </Link>
             <Link to='/login' className='p-info-btn' onClick={handleLogout}>
-              {/* <button onClick={handleLogout} className='logout-btn navlink'> */}
               Logout
-              {/* </button> */}
             </Link>
           </div>
         </div>
@@ -135,34 +133,54 @@ function Profile() {
             }}>
             {" "}
             <button
-              onClick={() => setActiveTab("myBlogs")}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                background: activeTab === "myBlogs" ? "#2563eb" : "#e5e7eb",
-                color: activeTab === "myBlogs" ? "white" : "black",
-              }}>
+              onClick={() => setActiveBlogTab("myBlogs")}
+              className='p-info-btn'
+              style={
+                activeBlogTab === "myBlogs"
+                  ? {
+                      background: "#810b38",
+                      border: "1px solid #810b38",
+                      transition: "all .3s ease",
+                      color: "white",
+                    }
+                  : {
+                      border: "1px solid #810b38",
+                      transition: "all .3s ease",
+                    }
+              }>
               My Blogs
             </button>
             <button
-              onClick={() => setActiveTab("savedBlogs")}
-              style={{
-                padding: "10px 20px",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                background: activeTab === "savedBlogs" ? "#2563eb" : "#e5e7eb",
-                color: activeTab === "savedBlogs" ? "white" : "black",
-              }}>
+              onClick={() => setActiveBlogTab("savedBlogs")}
+              className='p-info-btn'
+              style={
+                activeBlogTab === "savedBlogs"
+                  ? {
+                      border: "1px solid #810b38",
+                      background: "#810b38",
+                      color: "white",
+                      transition: "all .3s ease",
+                    }
+                  : {
+                      border: "1px solid #810b38",
+                      transition: "all .3s ease",
+                    }
+              }>
               Saved Blogs
             </button>
           </div>
-          {activeTab === "myBlogs" && (
-            <div className='profile-data '>
-              <label htmlFor=''> Your Blogs: </label>
-
+          {activeBlogTab === "myBlogs" && (
+            <label htmlFor=''> Your Blogs:</label>
+          )}{" "}
+          {activeBlogTab === "savedBlogs" && (
+            <label htmlFor=''> Saved Blogs:</label>
+          )}
+          {activeBlogTab === "myBlogs" && (
+            <div
+              className='profile-data  '
+              style={{
+                transition: "all .3s ease in",
+              }}>
               {myblogs.map((blog) => (
                 <div key={blog._id} className='my-blog-card flex'>
                   <Card
@@ -192,10 +210,9 @@ function Profile() {
               ))}
             </div>
           )}
-
-          {activeTab === "savedBlogs" && (
+          {/* <label htmlFor=''> Saved Blogs: </label> */}
+          {activeBlogTab === "savedBlogs" && (
             <div className='profile-data '>
-              <label htmlFor=''> Your Blogs: </label>
               {savedBlogs.map((blog) => (
                 <Link
                   key={blog._id}

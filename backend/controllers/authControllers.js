@@ -142,14 +142,9 @@ export const getMe = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    // console.log("step:1");
-    // console.log("Request Body:", req.body);
-
     const { email } = req.body;
-    // console.log("step:2");
 
     const user = await User.findOne({ email });
-    // console.log("step:3");
 
     if (!user) {
       return res.status(404).json({
@@ -157,21 +152,15 @@ export const forgotPassword = async (req, res) => {
         message: "User not found",
       });
     }
-    // console.log("step:4");
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    // console.log("step:5");
 
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // for 15 min
-    // console.log("step:6");
 
     await user.save();
-    // console.log("step:7");
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-
-    // console.log("step:8");
 
     await sendMail({
       to: user.email,
@@ -184,9 +173,6 @@ export const forgotPassword = async (req, res) => {
     </a>
   `,
     });
-    // console.log("step:9");
-
-    // console.log("step:10");
 
     res.json({
       success: true,
