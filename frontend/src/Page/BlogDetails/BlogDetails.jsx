@@ -7,8 +7,11 @@ import { BackButton, Comments } from "../../components";
 import "./BlogDetails.css";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookmark as farBookmark } from "@fortawesome/free-regular-svg-icons";
-import { faBookmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBookmark as farBookmark,
+  faHeart as farHeart,
+} from "@fortawesome/free-regular-svg-icons";
+import { faBookmark, faHeart } from "@fortawesome/free-solid-svg-icons";
 
 function BlogDetails() {
   const { user } = useAuth();
@@ -141,31 +144,49 @@ function BlogDetails() {
   return (
     <div className='blog-container'>
       <BackButton />
-      <p>views: {countView}</p>
       <h1 className='blog-title'>{blog.title}</h1>
-      <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
+      <div className='flex blog-title-details'>
+        <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
+        <div className='blog-details flex'>
+          <Link
+            to={`/author/${blog.author?._id}`}
+            className=' blog-detail-item blog-auther'>
+            <p className=''>Author: {blog.author?.name}</p>
+          </Link>
+          <div className='blog-details-box flex'>
+            <button onClick={handleLike} className='blog-detail-item  '>
+              <span className='blog-icone'>
+                {liked ? (
+                  <FontAwesomeIcon icon={faHeart} />
+                ) : (
+                  <FontAwesomeIcon icon={farHeart} />
+                )}
+              </span>
+              <span className='blog-like-text'> {likesCount} Likes</span>
+            </button>
 
-      <Link to={`/author/${blog.author?._id}`}>
-        <p className='blog-auther'>Author: {blog.author?.name}</p>
-      </Link>
-
-      <div className='blog-like-box'>
-        <button onClick={handleLike}>{liked ? "❤️" : "🤍"}</button>
-
-        <span>{likesCount} Likes</span>
+            <button className=' blog-detail-item' onClick={handleBookmark}>
+              {bookmarked ? (
+                <>
+                  <span className='blog-icone'>
+                    <FontAwesomeIcon icon={faBookmark} />
+                  </span>
+                  Saved
+                </>
+              ) : (
+                <>
+                  <span className='blog-icone'>
+                    {" "}
+                    <FontAwesomeIcon icon={farBookmark} />
+                  </span>{" "}
+                  Save
+                </>
+              )}
+            </button>
+            <p className='blog-detail-item'>Views: {countView}</p>
+          </div>
+        </div>
       </div>
-
-      <button className='bookmark-btn' onClick={handleBookmark}>
-        {bookmarked ? (
-          <>
-            <FontAwesomeIcon icon={faBookmark} /> Saved
-          </>
-        ) : (
-          <>
-            <FontAwesomeIcon icon={farBookmark} /> Save
-          </>
-        )}
-      </button>
       <p className='blog-content'>
         {/* {blog.content} */}
         <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>

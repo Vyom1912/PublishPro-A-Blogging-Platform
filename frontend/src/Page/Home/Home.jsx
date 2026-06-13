@@ -9,7 +9,7 @@ function Home() {
   const [blogs, setBlogs] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 10;
+  const blogsPerPage = 8;
 
   useEffect(() => {
     if (searchQuery.trim()) {

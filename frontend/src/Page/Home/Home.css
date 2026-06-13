@@ -1,7 +1,7 @@
 .home-container {
   width: 85%;
   margin: auto;
-  padding: 30px 10px;
+  padding: 30px 10px 0;
 }
 .home-blogs-box {
   width: 100%;
@@ -11,6 +11,7 @@
   row-gap: 25px;
 }
 .home-blogs-box .card-link {
+  width: 100%;
   margin: auto;
 }
 @media (max-width: 1280px) {
@@ -56,20 +57,21 @@
 }
 
 .pagination button {
-  padding: 8px 14px;
-  border: 1px solid #ddd;
-  background: white;
+  padding: 6px 14px;
+  border: 1px solid var(--primary);
+  background: var(--bg);
   cursor: pointer;
   border-radius: 6px;
+  transition: all 0.3s ease;
 }
 
 .pagination button:hover {
-  background: #f3f4f6;
+  background: var(--secondary);
 }
 
 .active-page {
-  background: #2563eb !important;
-  color: white;
+  background: var(--primary) !important;
+  color: var(--bg);
   border-color: #2563eb;
 }
 
