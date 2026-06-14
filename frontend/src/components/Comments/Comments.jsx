@@ -19,96 +19,65 @@ function Comments() {
   const fetchComments = async () => {
     try {
       const res = await api.get(`/comments/${id}`);
-      console.log("COMMENTS FROM API:", res.data.comments);
-
       setComments(res.data.comments);
     } catch (error) {
       console.log(error);
     }
   };
+
   const submitComment = async () => {
+    if (!comment.trim()) return;
+
+    if (!user) {
+      alert("Please login to post a comment");
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login first");
-        return;
-      }
-
-      await api.post(
-        `/comments/${id}`,
-        {
-          content: comment,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
+      // No Authorization header needed — the accessToken cookie is sent
+      // automatically because axios is configured with withCredentials: true
+      await api.post(`/comments/${id}`, { content: comment });
       setComment("");
-
       fetchComments();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleEditComment = (comment) => {
-    setEditingId(comment._id);
-    setEditContent(comment.content);
+  const handleEditComment = (c) => {
+    setEditingId(c._id);
+    setEditContent(c.content);
   };
+
   const handleUpdateComment = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      await api.put(
-        `/comments/${editingId}`,
-        {
-          content: editContent,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
+      await api.put(`/comments/${editingId}`, { content: editContent });
       setEditingId(null);
-
       fetchComments();
     } catch (error) {
       console.log(error);
     }
   };
+
   const handleDeleteComment = async (commentId) => {
     try {
-      const token = localStorage.getItem("token");
-
-      await api.delete(`/comments/${commentId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await api.delete(`/comments/${commentId}`);
       fetchComments();
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
     <div className='comments-section'>
       <div className='add-comment-box'>
         <h3>Add Comment</h3>
-
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder='Write your comment...'
           rows='4'
         />
-
         <button onClick={submitComment}>Post Comment</button>
       </div>
 
@@ -117,34 +86,32 @@ function Comments() {
       {comments.length === 0 ? (
         <p>No comments yet.</p>
       ) : (
-        comments.map((comment) => (
-          <div key={comment._id} className='comment-card'>
+        comments.map((c) => (
+          <div key={c._id} className='comment-card'>
             <p>
-              <strong>{comment.user?.name}</strong>
+              <strong>{c.user?.name}</strong>
             </p>
 
-            {editingId === comment._id ? (
+            {editingId === c._id ? (
               <>
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                 />
-
                 <button onClick={handleUpdateComment}>Save</button>
-
                 <button onClick={() => setEditingId(null)}>Cancel</button>
               </>
             ) : (
               <>
-                <p>{comment.content}</p>
+                <p>{c.content}</p>
 
-                {user?.id === comment.user?._id && (
+                {/* Compare both as strings to handle ObjectId vs string mismatch.
+                    The backend populates comment.user._id as an ObjectId, and
+                    user.id in AuthContext is normalised to a plain string. */}
+                {user && String(user.id) === String(c.user?._id) && (
                   <div className='comment-actions'>
-                    <button onClick={() => handleEditComment(comment)}>
-                      Edit
-                    </button>
-
-                    <button onClick={() => handleDeleteComment(comment._id)}>
+                    <button onClick={() => handleEditComment(c)}>Edit</button>
+                    <button onClick={() => handleDeleteComment(c._id)}>
                       Delete
                     </button>
                   </div>

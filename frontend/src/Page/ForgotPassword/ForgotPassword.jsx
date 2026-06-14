@@ -1,5 +1,7 @@
 import { useState } from "react";
 import api from "../../api/axios";
+import "./ForgotPassword.css";
+import { InputBox } from "../../components";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -19,16 +21,31 @@ function ForgotPassword() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type='email'
-        placeholder='Enter email'
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+    <div className='login edit-password flex'>
+      <h1 className='text-3xl font-bold underline'>
+        Send Request to Email for Reset Password
+      </h1>
 
-      <button type='submit'>Send Reset Link</button>
-    </form>
+      <form onSubmit={handleSubmit} className='flex f-form'>
+        {/* <input
+          type='email'
+          placeholder='Enter email'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        /> */}
+        <InputBox
+          label='Enter Email'
+          type='text'
+          // id='email'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder='Enter Email...'
+        />
+        <button type='submit' className='save-btn'>
+          Send Reset Link
+        </button>
+      </form>
+    </div>
   );
 }
 

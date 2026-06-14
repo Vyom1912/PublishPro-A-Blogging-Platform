@@ -13,28 +13,32 @@ function InputBox({ label, type = "text", id, value, onChange, placeholder }) {
   return (
     <div className='form-group'>
       <label for={id}>{label} </label>
-      <input
-        type={inputType}
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-      />
-      {type === "password" && (
-        <FontAwesomeIcon
-          icon={showPassword ? faEye : faEyeSlash}
-          onClick={() => setShowPassword(!showPassword)}
-          style={
-            {
-              //   cursor: "pointer",
-              //   position: "absolute",
-              //   right: "10px",
-              //   top: "50%",
-              //   transform: "translateY(-50%)",
-            }
-          }
+      <div className='form-input-box'>
+        <input
+          type={inputType}
+          id={id}
+          value={value}
+          // onChange={(e) => onChange(e.target.value)}
+          onChange={onChange}
+          placeholder={placeholder}
         />
-      )}
+        {type === "password" && (
+          <FontAwesomeIcon
+            className='input-eye-icone'
+            icon={showPassword ? faEye : faEyeSlash}
+            onClick={() => setShowPassword(!showPassword)}
+            style={
+              {
+                //   cursor: "pointer",
+                //   position: "absolute",
+                //   right: "10px",
+                //   top: "50%",
+                //   transform: "translateY(-50%)",
+              }
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
     image: {
       type: String,
@@ -30,6 +31,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
+      enum: ["user", "admin"],
       default: "user",
     },
 
@@ -39,6 +41,7 @@ const userSchema = new mongoose.Schema(
         ref: "Blog",
       },
     ],
+
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
   },

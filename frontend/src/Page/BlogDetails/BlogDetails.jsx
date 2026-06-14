@@ -1,10 +1,8 @@
-// import React from "react";
 import "./BlogDetails.css";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { BackButton, Comments } from "../../components";
-import "./BlogDetails.css";
 import { useAuth } from "../../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -27,28 +25,27 @@ function BlogDetails() {
 
   useEffect(() => {
     fetchBlog();
+    handleView();
 
+    // Only fetch bookmark status when the user is logged in
     if (user) {
       fetchBookmarkStatus();
     }
-    handleView();
   }, [id, user]);
 
   const fetchBlog = async () => {
     try {
       const res = await api.get(`/blogs/${id}`);
       setBlog(res.data);
-
       setLikesCount(res.data.likes?.length || 0);
 
-      // setLiked(
-      //   res.data.likes?.includes(user?._id) ||
-      //     res.data.likes?.includes(user?.id),
-      // );
+      // Check if the current user has liked this blog.
+      // res.data.likes is an array of user-id strings returned by MongoDB.
+      // We compare with String() to safely handle ObjectId vs string.
       if (user) {
         setLiked(
           res.data.likes?.some(
-            (userId) => userId.toString() === (user._id || user.id),
+            (userId) => String(userId) === String(user.id),
           ),
         );
       }
@@ -58,24 +55,14 @@ function BlogDetails() {
   };
 
   const handleLike = async () => {
+    if (!user) {
+      alert("Please login to like a blog");
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        alert("Please login first");
-        return;
-      }
-
-      const res = await api.put(
-        `/blogs/${id}/like`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
+      // Cookie is sent automatically — no Authorization header needed
+      const res = await api.put(`/blogs/${id}/like`, {});
       setLiked(res.data.liked);
       setLikesCount(res.data.likesCount);
     } catch (error) {
@@ -84,21 +71,13 @@ function BlogDetails() {
   };
 
   const handleBookmark = async () => {
+    if (!user) {
+      alert("Please login to save a blog");
+      return;
+    }
+
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.post(
-        `/users/bookmark/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      console.log("saved", res.data);
-
+      const res = await api.post(`/users/bookmark/${id}`, {});
       setBookmarked(res.data.bookmarked);
     } catch (error) {
       console.log(error);
@@ -107,16 +86,7 @@ function BlogDetails() {
 
   const fetchBookmarkStatus = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) return;
-
-      const res = await api.get(`/users/bookmark-status/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const res = await api.get(`/users/bookmark-status/${id}`);
       setBookmarked(res.data.bookmarked);
     } catch (error) {
       console.log(error);
@@ -124,23 +94,19 @@ function BlogDetails() {
   };
 
   const handleView = async () => {
-    const token = localStorage.getItem("token");
-
-    const res = await api.patch(
-      `/blogs/${id}/view`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-
-    setCountView(res.data.views);
+    try {
+      // optionalAuth on the backend — works for both guests and logged-in users
+      const res = await api.patch(`/blogs/${id}/view`, {});
+      setCountView(res.data.views);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   if (!blog) {
     return <h2>Loading...</h2>;
   }
+
   return (
     <div className='blog-container'>
       <BackButton />
@@ -151,10 +117,10 @@ function BlogDetails() {
           <Link
             to={`/author/${blog.author?._id}`}
             className=' blog-detail-item blog-auther'>
-            <p className=''>Author: {blog.author?.name}</p>
+            <p>Author: {blog.author?.name}</p>
           </Link>
           <div className='blog-details-box flex'>
-            <button onClick={handleLike} className='blog-detail-item  '>
+            <button onClick={handleLike} className='blog-detail-item'>
               <span className='blog-icone'>
                 {liked ? (
                   <FontAwesomeIcon icon={faHeart} />
@@ -176,21 +142,20 @@ function BlogDetails() {
               ) : (
                 <>
                   <span className='blog-icone'>
-                    {" "}
                     <FontAwesomeIcon icon={farBookmark} />
                   </span>{" "}
                   Save
                 </>
               )}
             </button>
+
             <p className='blog-detail-item'>Views: {countView}</p>
           </div>
         </div>
       </div>
-      <p className='blog-content'>
-        {/* {blog.content} */}
+      <div className='blog-content'>
         <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
-      </p>
+      </div>
       <Comments />
     </div>
   );

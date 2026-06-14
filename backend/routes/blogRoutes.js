@@ -14,6 +14,7 @@ import {
 
 import upload from "../middleware/uploadImage.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import optionalAuth from "../middleware/optionalAuth.js";
 
 const router = express.Router();
 router.get("/", getAllBlogs);
@@ -33,7 +34,8 @@ router.put("/:id/like", authMiddleware, toggleLike);
 router.put("/:id", authMiddleware, upload.single("titleImage"), updateBlog);
 router.delete("/:id", authMiddleware, deleteBlog);
 
-router.patch("/:id/view", authMiddleware, viewBlog);
+// optionalAuth so view counts work for both guests and logged-in users
+router.patch("/:id/view", optionalAuth, viewBlog);
 
 // router.put(
 //   "/profile-image",

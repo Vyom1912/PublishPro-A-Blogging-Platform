@@ -1,0 +1,9 @@
+.form-input-box {
+  position: relative;
+}
+.input-eye-icone {
+  cursor: pointer;
+  position: absolute;
+  top: 26%;
+  right: 8px;
+}

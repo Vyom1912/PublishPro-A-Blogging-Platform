@@ -3,26 +3,28 @@ import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
+
 function Login() {
   const { setUser } = useAuth();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      const res = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const res = await api.post("/auth/login", { email, password });
 
-      localStorage.setItem("token", res.data.token);
-
+      // The server sets accessToken and refreshToken as httpOnly cookies.
+      // We only store the non-sensitive user data in React state.
+      // There is NO token in localStorage — the cookie is the credential.
       setUser(res.data.user);
       navigate("/");
-    } catch (error) {
-      console.log(error.response?.data);
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 
@@ -32,26 +34,29 @@ function Login() {
 
       <form className='flex f-form' onSubmit={handleSubmit}>
         <div className='form-group'>
-          <label for='email'> Email</label>
+          <label htmlFor='email'>Email</label>
           <input
             type='email'
             id='email'
             value={email}
             name='email'
             onChange={(e) => setEmail(e.target.value)}
-            placeholder='Enter email......'
+            placeholder='Enter email...'
           />
         </div>
         <div className='form-group'>
-          <label for='password'> Password</label>
+          <label htmlFor='password'>Password</label>
           <input
             type='password'
             id='password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder='Enter password......'
+            placeholder='Enter password...'
           />
         </div>
+
+        {error && <p className='error-msg' style={{ color: "red" }}>{error}</p>}
+
         <label htmlFor=''>
           <Link to='/forgot-password'>Forgot Password?</Link>
         </label>
@@ -60,7 +65,7 @@ function Login() {
         </button>
       </form>
       <label htmlFor=''>
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link to='/signup' className='text-blue-600 bold'>
           Sign up for Free
         </Link>

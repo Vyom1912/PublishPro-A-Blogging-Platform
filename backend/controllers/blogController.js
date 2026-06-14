@@ -276,28 +276,28 @@ export const viewBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id);
 
     if (!blog) {
-      return res.status(404).json({
-        message: "Blog not found",
-      });
+      return res.status(404).json({ message: "Blog not found" });
     }
 
-    const userId = req.user.id;
-
-    const alreadyViewed = blog.viewedBy.includes(userId);
-
-    if (!alreadyViewed) {
+    // For logged-in users: only count one view per user (deduplication).
+    // For anonymous visitors: always increment — we can't deduplicate without identity.
+    if (req.user) {
+      const alreadyViewed = blog.viewedBy.some(
+        (id) => id.toString() === req.user.id.toString(),
+      );
+      if (!alreadyViewed) {
+        blog.views += 1;
+        blog.viewedBy.push(req.user.id);
+        await blog.save();
+      }
+    } else {
+      // Anonymous view — just increment (no deduplication possible)
       blog.views += 1;
-      blog.viewedBy.push(userId);
-
       await blog.save();
     }
 
-    res.status(200).json({
-      views: blog.views,
-    });
+    res.status(200).json({ views: blog.views });
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
