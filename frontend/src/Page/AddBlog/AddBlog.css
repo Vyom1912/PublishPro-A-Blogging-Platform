@@ -20,7 +20,8 @@
   /* height: 200px; */
   grid-template-columns: 1fr 1fr;
 }
-.add-blog-form .form-group input {
+.add-blog-form .form-group input,
+.add-blog-form .form-group textarea {
   width: 100%;
   font-size: 1rem !important;
   height: fit-content !important;

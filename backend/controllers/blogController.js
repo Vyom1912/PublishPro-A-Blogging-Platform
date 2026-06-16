@@ -4,7 +4,7 @@ import User from "../models/User.js";
 import upload from "../middleware/uploadImage.js";
 export const createBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, description, content } = req.body;
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -17,6 +17,7 @@ export const createBlog = async (req, res) => {
     // console.log(req.user);
     const blog = await Blog.create({
       title,
+      description,
       content,
       featuredImage: result.secure_url,
       author: req.user.id,

@@ -44,9 +44,7 @@ function BlogDetails() {
       // We compare with String() to safely handle ObjectId vs string.
       if (user) {
         setLiked(
-          res.data.likes?.some(
-            (userId) => String(userId) === String(user.id),
-          ),
+          res.data.likes?.some((userId) => String(userId) === String(user.id)),
         );
       }
     } catch (error) {
@@ -153,6 +151,7 @@ function BlogDetails() {
           </div>
         </div>
       </div>
+      <p>{blog.description}</p>
       <div className='blog-content'>
         <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
       </div>

@@ -3,10 +3,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RTE } from "../../components";
 import api from "../../api/axios";
+import { InputBox } from "../../components";
+
 import "./AddBlog.css";
 function AddBlog() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [titleImage, setTitleImage] = useState(null);
   // const [featuredImage, setFeaturedImage] = useState("");
   const [imagePreview, setImagePreview] = useState("");
@@ -27,6 +30,7 @@ function AddBlog() {
     const formData = new FormData();
 
     formData.append("title", title);
+    formData.append("description", description);
     formData.append("titleImage", titleImage);
     formData.append("content", content);
 
@@ -46,6 +50,7 @@ function AddBlog() {
       setTitle("");
       setTitleImage(null);
       setImagePreview("");
+      setDescription("");
       setContent("");
       navigate("/");
     } catch (error) {
@@ -56,12 +61,35 @@ function AddBlog() {
     <div className='add-blog-container'>
       <form onSubmit={handleSubmit} className='flex add-blog-form'>
         <div className='form-group'>
-          <label htmlFor='title'>Title:</label>
+          {/* <label htmlFor='title'>Title:</label>
           <input
             type='text'
             placeholder='Title'
             onChange={(e) => setTitle(e.target.value)}
-          />
+          /> */}
+        </div>
+        <InputBox
+          label='Title:'
+          type='text'
+          id='new-password'
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder='Enter title...'
+        />{" "}
+        <div className='form-group'>
+          <label htmlFor='description'>Description:</label>
+          {/* <input
+            type='text'
+            placeholder='Title'
+            onChange={(e) => setTitle(e.target.value)}
+          /> */}
+          <textarea
+            name=''
+            id='description'
+            placeholder='Enter short description...'
+            rows={3}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}></textarea>
         </div>
         <div className='form-group'>
           <label htmlFor='titleImage'>Title Image:</label>
@@ -84,7 +112,6 @@ function AddBlog() {
           </div>
         </div>
         <RTE value={content} onChange={setContent} />
-
         <button type='submit' className='addblog-btn'>
           Add Blog
         </button>
