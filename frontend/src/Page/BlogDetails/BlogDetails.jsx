@@ -151,7 +151,22 @@ function BlogDetails() {
           </div>
         </div>
       </div>
-      <p>{blog.description}</p>
+      <p>
+        {" "}
+        <b> Description: </b>
+        {blog.description}
+      </p>
+      <p>
+        {" "}
+        <b> label: </b> {blog.label}
+      </p>
+      <div className='blog-tags'>
+        {blog.tags?.map((tag) => (
+          <span key={tag} className='tag'>
+            #{tag}{" "}
+          </span>
+        ))}
+      </div>
       <div className='blog-content'>
         <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
       </div>

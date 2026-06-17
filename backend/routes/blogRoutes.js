@@ -10,6 +10,7 @@ import {
   toggleLike,
   viewBlog,
   getAutherInfo,
+  getLabels,
 } from "../controllers/blogController.js";
 
 import upload from "../middleware/uploadImage.js";
@@ -17,7 +18,9 @@ import authMiddleware from "../middleware/authMiddleware.js";
 import optionalAuth from "../middleware/optionalAuth.js";
 
 const router = express.Router();
+
 router.get("/", getAllBlogs);
+router.get("/labels", getLabels);
 
 router.get("/search", searchBlogs);
 

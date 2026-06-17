@@ -10,18 +10,19 @@ import "./Profile.css";
 
 function Profile() {
   const { user, logout } = useAuth();
-
+  const id = user?._id || user?.id;
   const navigate = useNavigate();
-
+  // const [userData, setUserData] = useState(null);
   const [myblogs, setMyBlogs] = useState([]);
   const [savedBlogs, setSavedBlogs] = useState([]);
   const [activeBlogTab, setActiveBlogTab] = useState("myBlogs");
   useEffect(() => {
-    if (user) {
+    if (user && id) {
+      // fectchUserData();
       getMyBlogs();
       fetchSavedBlogs();
     }
-  }, [user]);
+  }, [user, id]);
   if (!user) {
     return <h2>Please Login</h2>;
   }
@@ -29,6 +30,28 @@ function Profile() {
     logout();
     navigate("/login");
   };
+
+  // const fectchUserData = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+
+  //     const res = await api.get(`/blogs/author/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     setUserData(res.data);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // const stats = userData?.stats || {
+  //   totalBlogs: 0,
+  //   totalLikes: 0,
+  //   totalViews: 0,
+  //   totalSaves: 0,
+  // };
+
   const fetchSavedBlogs = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -81,6 +104,7 @@ function Profile() {
       console.log(error);
     }
   };
+
   return (
     <div>
       <div className='container profile'>
@@ -105,6 +129,12 @@ function Profile() {
 
                 <p>{user.about || ""}</p>
               </div>
+              {/* <div className='p-info-data flex'>
+                <p>Total Blogs: {stats.totalBlogs}</p>
+                <p>Total likes: {stats.totalLikes}</p>
+                <p>Total views: {stats.totalViews}</p>
+                <p>Total savedBy: {stats.totalSaves}</p>
+              </div> */}
             </div>
             {/* <br /> */}
           </div>
@@ -188,7 +218,10 @@ function Profile() {
                     title={blog.title}
                     imgSrc={blog.featuredImage}
                     content={blog.content}
-                    author={user.name}
+                    // author={user.name}
+                    // likes={blog.likes?.length}
+                    // views={blog.views}
+                    // saves={blog.savedBy?.length || 0}
                   />
                   <div className='blog-actions flex'>
                     <Link to={`blog/${blog._id}`} className='blog-actions-btn'>

@@ -12,6 +12,18 @@ const blogSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
+    label: {
+      type: String,
+      required: true,
+    },
+    tags: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true,
+      },
+    ],
     content: {
       type: String,
       required: true,
@@ -37,6 +49,12 @@ const blogSchema = new mongoose.Schema(
       default: 0,
     },
     viewedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    savedBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

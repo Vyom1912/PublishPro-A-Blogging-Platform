@@ -1,5 +1,5 @@
 // import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RTE } from "../../components";
 import api from "../../api/axios";
@@ -10,10 +10,26 @@ function AddBlog() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [labels, setLabels] = useState([]);
+  const [label, setLabel] = useState("");
+  const [tags, setTags] = useState("");
   const [titleImage, setTitleImage] = useState(null);
   // const [featuredImage, setFeaturedImage] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [content, setContent] = useState("");
+
+  useEffect(() => {
+    fetchLabels();
+  }, []);
+
+  const fetchLabels = async () => {
+    try {
+      const res = await api.get("/blogs/labels");
+      setLabels(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -31,9 +47,10 @@ function AddBlog() {
 
     formData.append("title", title);
     formData.append("description", description);
+    formData.append("label", label);
+    formData.append("tags", tags);
     formData.append("titleImage", titleImage);
     formData.append("content", content);
-
     // api comes here form connecting to backend
     // await axios.post("http://localhost:5000/api/users/upload", formData);
 
@@ -48,6 +65,9 @@ function AddBlog() {
       console.log(res.data);
 
       setTitle("");
+      setLabel("");
+
+      setTags([]);
       setTitleImage(null);
       setImagePreview("");
       setDescription("");
@@ -71,7 +91,7 @@ function AddBlog() {
         <InputBox
           label='Title:'
           type='text'
-          id='new-password'
+          id='title'
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder='Enter title...'
@@ -90,6 +110,32 @@ function AddBlog() {
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}></textarea>
+        </div>
+        <div className='form-group'>
+          <label htmlFor='label'>Categories:</label>
+          <select
+            name='label'
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}>
+            <option value=''>Select a label</option>
+
+            {labels.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className='form-group'>
+          <label>Tags:</label>
+          <input
+            type='text'
+            placeholder='react, hooks, javascript'
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+          />
+
+          <small>Separate tags with commas.</small>
         </div>
         <div className='form-group'>
           <label htmlFor='titleImage'>Title Image:</label>

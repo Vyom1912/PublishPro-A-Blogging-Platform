@@ -23,8 +23,16 @@
 .add-blog-form .form-group input,
 .add-blog-form .form-group textarea {
   width: 100%;
+  /* outline: none; */
   font-size: 1rem !important;
   height: fit-content !important;
+  background-color: var(--secondary);
+}
+.add-blog-form .form-group select {
+  outline: none;
+  padding: 5px 15px;
+  border-radius: 5px;
+  border: 1px solid var(--primary);
   background-color: var(--secondary);
 }
 .add-blog-form .sub-form-group input {
