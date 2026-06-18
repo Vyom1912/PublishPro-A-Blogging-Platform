@@ -13,6 +13,12 @@ function Profile() {
   const id = user?._id || user?.id;
   const navigate = useNavigate();
   // const [userData, setUserData] = useState(null);
+  const [stats, setStats] = useState({
+    totalBlogs: 0,
+    totalLikes: 0,
+    totalViews: 0,
+    totalSaves: 0,
+  });
   const [myblogs, setMyBlogs] = useState([]);
   const [savedBlogs, setSavedBlogs] = useState([]);
   const [activeBlogTab, setActiveBlogTab] = useState("myBlogs");
@@ -30,54 +36,21 @@ function Profile() {
     logout();
     navigate("/login");
   };
-
-  // const fectchUserData = async () => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-
-  //     const res = await api.get(`/blogs/author/${id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-  //     setUserData(res.data);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // const stats = userData?.stats || {
-  //   totalBlogs: 0,
-  //   totalLikes: 0,
-  //   totalViews: 0,
-  //   totalSaves: 0,
-  // };
-
+  
   const fetchSavedBlogs = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.get("/users/saved-blogs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const res = await api.get("/users/saved-blogs");
       setSavedBlogs(res.data.blogs);
     } catch (error) {
       console.log(error);
     }
   };
+
   const getMyBlogs = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.get("/blogs/my-blogs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const res = await api.get("/blogs/my-blogs");
       setMyBlogs(res.data.blogs);
+      setStats(res.data.stats);
     } catch (error) {
       console.log(error);
     }
@@ -91,14 +64,7 @@ function Profile() {
     if (!confirmDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
-
-      await api.delete(`/blogs/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await api.delete(`/blogs/${id}`);
       setMyBlogs((prev) => prev.filter((blog) => blog._id !== id));
     } catch (error) {
       console.log(error);
@@ -129,12 +95,12 @@ function Profile() {
 
                 <p>{user.about || ""}</p>
               </div>
-              {/* <div className='p-info-data flex'>
+              <div className='p-info-data flex'>
                 <p>Total Blogs: {stats.totalBlogs}</p>
                 <p>Total likes: {stats.totalLikes}</p>
                 <p>Total views: {stats.totalViews}</p>
                 <p>Total savedBy: {stats.totalSaves}</p>
-              </div> */}
+              </div>
             </div>
             {/* <br /> */}
           </div>
@@ -218,13 +184,14 @@ function Profile() {
                     title={blog.title}
                     imgSrc={blog.featuredImage}
                     content={blog.content}
-                    // author={user.name}
-                    // likes={blog.likes?.length}
-                    // views={blog.views}
-                    // saves={blog.savedBy?.length || 0}
                   />
+                  <div className='blog-stats'>
+                    <span>❤️ {blog.likes?.length || 0}</span>
+                    <span>👁️ {blog.views || 0}</span>
+                    <span>🔖 {blog.savedBy?.length || 0}</span>
+                  </div>
                   <div className='blog-actions flex'>
-                    <Link to={`blog/${blog._id}`} className='blog-actions-btn'>
+                    <Link to={`/blog/${blog._id}`} className='blog-actions-btn'>
                       Open
                     </Link>
                     <Link

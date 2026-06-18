@@ -12,14 +12,7 @@ function SavedBlogs() {
 
   const fetchSavedBlogs = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.get("/users/saved-blogs", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const res = await api.get("/users/saved-blogs");
       setSavedBlogs(res.data.blogs);
     } catch (error) {
       console.log(error);

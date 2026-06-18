@@ -26,26 +26,39 @@ function BlogDetails() {
   useEffect(() => {
     fetchBlog();
     handleView();
+  }, [id]);
 
-    // Only fetch bookmark status when the user is logged in
+  // Re-check like + bookmark status whenever user or blog id changes
+  useEffect(() => {
     if (user) {
+      fetchLikeStatus();
       fetchBookmarkStatus();
+    } else {
+      setBookmarked(false);
+      setLiked(false);
     }
-  }, [id, user]);
+  }, [user, id]);
 
   const fetchBlog = async () => {
     try {
       const res = await api.get(`/blogs/${id}`);
       setBlog(res.data);
       setLikesCount(res.data.likes?.length || 0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      // Check if the current user has liked this blog.
-      // res.data.likes is an array of user-id strings returned by MongoDB.
-      // We compare with String() to safely handle ObjectId vs string.
+  // Called after fetchBlog resolves OR whenever user changes — sets liked state
+  const fetchLikeStatus = async () => {
+    try {
+      const res = await api.get(`/blogs/${id}`);
       if (user) {
         setLiked(
-          res.data.likes?.some((userId) => String(userId) === String(user.id)),
+          res.data.likes?.some((uid) => String(uid) === String(user._id || user.id)) || false,
         );
+      } else {
+        setLiked(false);
       }
     } catch (error) {
       console.log(error);
@@ -58,12 +71,21 @@ function BlogDetails() {
       return;
     }
 
+    // Optimistic update
+    const prevLiked = liked;
+    const prevCount = likesCount;
+    setLiked(!liked);
+    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+
     try {
-      // Cookie is sent automatically — no Authorization header needed
       const res = await api.put(`/blogs/${id}/like`, {});
+      // Sync with server's authoritative values
       setLiked(res.data.liked);
       setLikesCount(res.data.likesCount);
     } catch (error) {
+      // Rollback on failure
+      setLiked(prevLiked);
+      setLikesCount(prevCount);
       console.log(error);
     }
   };
@@ -74,16 +96,24 @@ function BlogDetails() {
       return;
     }
 
+    // Optimistic update
+    const prevBookmarked = bookmarked;
+    setBookmarked(!bookmarked);
+
     try {
       const res = await api.post(`/users/bookmark/${id}`, {});
+      // Sync with server's authoritative value
       setBookmarked(res.data.bookmarked);
     } catch (error) {
+      // Rollback on failure
+      setBookmarked(prevBookmarked);
       console.log(error);
     }
   };
 
   const fetchBookmarkStatus = async () => {
     try {
+      // Cookie is sent automatically — no Authorization header needed
       const res = await api.get(`/users/bookmark-status/${id}`);
       setBookmarked(res.data.bookmarked);
     } catch (error) {

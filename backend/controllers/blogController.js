@@ -63,12 +63,6 @@ export const getAllBlogs = async (req, res) => {
     });
   }
 };
-//
-// const getSingleBlogStats = (blog) => ({
-//   likes: blog.likes?.length || 0,
-//   views: blog.views || 0,
-//   saves: blog.savedBy?.length || 0,
-// });
 
 export const getMyBlogs = async (req, res) => {
   try {
@@ -76,13 +70,27 @@ export const getMyBlogs = async (req, res) => {
       author: req.user.id,
     }).sort({ createdAt: -1 });
 
-    // const blogsWithStats = blogs.map((blog) => ({
-    //   ...blog.toObject(),
-    //   stats: getSingleBlogStats(blog),
-    // }));
+    const totalLikes = blogs.reduce(
+      (sum, blog) => sum + (blog.likes?.length || 0),
+      0,
+    );
+
+    const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
+
+    const totalSaves = blogs.reduce(
+      (sum, blog) => sum + (blog.savedBy?.length || 0),
+      0,
+    );
+
     res.status(200).json({
       success: true,
       blogs,
+      stats: {
+        totalBlogs: blogs.length,
+        totalLikes,
+        totalViews,
+        totalSaves,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -141,11 +149,11 @@ export const updateBlog = async (req, res) => {
     }
 
     blog.title = title || blog.title;
+    blog.description = description || blog.description;
+    blog.label = label || blog.label;
     blog.content = content || blog.content;
-    blog.featuredImage = featuredImage || blog.featuredImage;
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
-
       blog.featuredImage = result.secure_url;
     }
     await blog.save();
@@ -235,24 +243,6 @@ export const searchBlogs = async (req, res) => {
   }
 };
 
-// const getBlogStats = (blogs) => {
-//   return blogs.reduce(
-//     (stats, blog) => {
-//       stats.totalBlogs += 1;
-//       stats.totalLikes += blog.likes?.length || 0;
-//       stats.totalViews += blog.views || 0;
-//       stats.totalSaves += blog.savedBy?.length || 0;
-
-//       return stats;
-//     },
-//     {
-//       totalBlogs: 0,
-//       totalLikes: 0,
-//       totalViews: 0,
-//       totalSaves: 0,
-//     },
-//   );
-// };
 export const getAutherInfo = async (req, res) => {
   try {
     const author = await User.findById(req.params.id).select(
@@ -265,31 +255,23 @@ export const getAutherInfo = async (req, res) => {
         .json({ success: false, message: "Author not found" });
     }
 
-    // const blogs = await Blog.find({ author: req.params.id })
-    //   .sort({ createdAt: -1 })
-    //   .select("title featuredImage likes views createdAt");
-
     const blogs = await Blog.find({ author: req.params.id })
       .sort({ createdAt: -1 })
       .select("title featuredImage likes views savedBy createdAt");
+
     const totalLikes = blogs.reduce((sum, b) => sum + b.likes.length, 0);
     const totalViews = blogs.reduce((sum, b) => sum + b.views, 0);
-    // const totalSaves = blogs.reduce(
-    //   (sum, blog) => sum + blog.savedBy.length,
-    //   0,
-    // );
-    // const stats = getBlogStats(blogs);
+    const totalSaves = blogs.reduce((sum, b) => sum + (b.savedBy?.length || 0), 0);
 
     res.json({
       success: true,
       author,
       blogs,
-      // stats,
       stats: {
         totalBlogs: blogs.length,
         totalLikes,
         totalViews,
-        //   totalSaves,
+        totalSaves,
       },
     });
   } catch (error) {
@@ -311,14 +293,13 @@ export const toggleLike = async (req, res) => {
       });
     }
 
-    const alreadyLiked = blog.likes.includes(req.user.id);
+    const userId = req.user._id.toString();
+    const alreadyLiked = blog.likes.some((id) => id.toString() === userId);
 
     if (alreadyLiked) {
-      blog.likes = blog.likes.filter(
-        (userId) => userId.toString() !== req.user.id,
-      );
+      blog.likes = blog.likes.filter((id) => id.toString() !== userId);
     } else {
-      blog.likes.push(req.user.id);
+      blog.likes.push(req.user._id);
     }
 
     await blog.save();

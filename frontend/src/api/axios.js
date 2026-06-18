@@ -59,8 +59,6 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // The refreshToken cookie is sent automatically because of withCredentials.
-        // The server verifies it, issues a new accessToken cookie, and returns 200.
         await api.post("/auth/refresh");
         processQueue(null);
         return api(originalRequest); // retry the original failed request

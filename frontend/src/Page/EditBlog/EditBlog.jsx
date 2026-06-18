@@ -41,8 +41,6 @@ function EditBlog() {
     e.preventDefault();
     // console.log("Submit clicked");
     try {
-      const token = localStorage.getItem("token");
-
       const formData = new FormData();
       formData.append("title", title);
       formData.append("content", content);
@@ -50,11 +48,7 @@ function EditBlog() {
       if (titleImage) {
         formData.append("titleImage", titleImage);
       }
-      const res = await api.put(`/blogs/${id}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.put(`/blogs/${id}`, formData);
       alert("Blog Updated Successfully");
       navigate("/profile");
     } catch (error) {

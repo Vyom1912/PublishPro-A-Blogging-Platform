@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { InputBox } from "../../components";
 function ResetPassword() {
@@ -16,18 +16,12 @@ function ResetPassword() {
     e.preventDefault();
 
     try {
-      console.log("Submitting...");
-      const { data } = await axios.post(
-        `http://localhost:5000/api/auth/reset-password/${token}`,
-        {
-          password,
-        },
+      const { data } = await api.post(
+        `/auth/reset-password/${token}`,
+        { password },
       );
       setMessage(data.message);
-
-      localStorage.removeItem("token");
       setUser(null);
-
       navigate("/login");
     } catch (error) {
       setMessage(error.response?.data?.message || "Something went wrong");

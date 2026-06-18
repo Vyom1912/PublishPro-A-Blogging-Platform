@@ -4,8 +4,15 @@ export const createComment = async (req, res) => {
   try {
     const { content } = req.body;
 
+    if (!content || !content.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment content is required",
+      });
+    }
+
     const comment = await Comment.create({
-      content,
+      content: content.trim(),
       user: req.user.id,
       blog: req.params.blogId,
     });
@@ -29,7 +36,7 @@ export const getComments = async (req, res) => {
     })
       .populate("user", "name image")
       .sort({ createdAt: -1 });
-    console.log(comments);
+
     res.json({
       success: true,
       comments,

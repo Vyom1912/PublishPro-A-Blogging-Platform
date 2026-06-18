@@ -32,9 +32,6 @@ function Home() {
   const fetchBlogs = async () => {
     try {
       const res = await api.get("/blogs");
-      // console.log(res.data);
-      console.log(Array.isArray(res.data.blogs));
-      console.log(res.data.blogs);
       setBlogs(res.data.blogs);
     } catch (error) {
       console.error(error);

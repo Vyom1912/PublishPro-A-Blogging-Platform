@@ -9,14 +9,7 @@ function AuthorProfile() {
   useEffect(() => {
     const fetchAuthor = async () => {
       try {
-        const token = localStorage.getItem("token");
-        // const res = await api.get(`/author/${id}`);
-
-        const res = await api.get(`/blogs/author/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await api.get(`/blogs/author/${id}`);
         setData(res.data);
       } catch (error) {
         console.error(error);

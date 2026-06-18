@@ -1,22 +1,29 @@
-// import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RTE } from "../../components";
 import api from "../../api/axios";
 import { InputBox } from "../../components";
+import { useAuth } from "../../context/AuthContext";
 
 import "./AddBlog.css";
 function AddBlog() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([]);
   const [label, setLabel] = useState("");
   const [tags, setTags] = useState("");
   const [titleImage, setTitleImage] = useState(null);
-  // const [featuredImage, setFeaturedImage] = useState("");
   const [imagePreview, setImagePreview] = useState("");
   const [content, setContent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  // Redirect guests away
+  useEffect(() => {
+    if (user === null) navigate("/login");
+  }, [user]);
 
   useEffect(() => {
     fetchLabels();
@@ -42,31 +49,31 @@ function AddBlog() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!titleImage) {
+      setError("Please select a title image");
+      return;
+    }
+    if (!label) {
+      setError("Please select a category");
+      return;
+    }
 
     const formData = new FormData();
-
     formData.append("title", title);
     formData.append("description", description);
     formData.append("label", label);
     formData.append("tags", tags);
     formData.append("titleImage", titleImage);
     formData.append("content", content);
-    // api comes here form connecting to backend
-    // await axios.post("http://localhost:5000/api/users/upload", formData);
 
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await api.post("/blogs", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(res.data);
+      setSubmitting(true);
+      await api.post("/blogs", formData);
 
       setTitle("");
       setLabel("");
-
       setTags([]);
       setTitleImage(null);
       setImagePreview("");
@@ -74,7 +81,10 @@ function AddBlog() {
       setContent("");
       navigate("/");
     } catch (error) {
+      setError(error.response?.data?.message || "Failed to create blog");
       console.error(error);
+    } finally {
+      setSubmitting(false);
     }
   };
   return (
@@ -98,11 +108,7 @@ function AddBlog() {
         />{" "}
         <div className='form-group'>
           <label htmlFor='description'>Description:</label>
-          {/* <input
-            type='text'
-            placeholder='Title'
-            onChange={(e) => setTitle(e.target.value)}
-          /> */}
+         
           <textarea
             name=''
             id='description'
@@ -158,8 +164,9 @@ function AddBlog() {
           </div>
         </div>
         <RTE value={content} onChange={setContent} />
-        <button type='submit' className='addblog-btn'>
-          Add Blog
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <button type='submit' className='addblog-btn' disabled={submitting}>
+          {submitting ? "Publishing..." : "Add Blog"}
         </button>
       </form>
     </div>

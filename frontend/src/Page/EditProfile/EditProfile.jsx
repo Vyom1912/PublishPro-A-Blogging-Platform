@@ -36,8 +36,6 @@ function EditProfile() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
-
       const data = new FormData();
 
       data.append("name", formData.name);
@@ -48,11 +46,7 @@ function EditProfile() {
         data.append("image", formData.image);
       }
 
-      const res = await api.put("/users/profile", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.put("/users/profile", data);
       console.log(res.data);
 
       setUser(res.data.user);
