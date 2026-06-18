@@ -71,7 +71,7 @@ function SignUp() {
 
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <button type='submit' className='save-btn'>
+        <button type='submit' className='inputBtn'>
           Sign Up
         </button>
       </form>

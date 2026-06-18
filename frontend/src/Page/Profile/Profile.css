@@ -1,5 +1,5 @@
 .profile {
-  width: 75%;
+  width: 85%;
   margin: 30px auto;
   /* padding: 20px; */
   border-radius: 10px;
@@ -60,11 +60,52 @@
   font-size: 1.2rem;
   text-align: left !important;
 }
+.about-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.about-content {
+  overflow: hidden;
+  max-height: 72px; /* about 3 lines */
+  transition: max-height 0.35s ease;
+}
+
+.about-content.expanded {
+  max-height: 500px; /* larger than expected content */
+}
+
+.about-content p {
+  margin: 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.about-btn {
+  background: none;
+  border: none;
+  color: var(--bg);
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.about-btn:hover {
+  text-decoration: underline;
+}
+
+.about-btn:hover {
+  text-decoration: underline;
+}
 .p-info-data input {
   width: 100%;
   margin-bottom: 13px;
 }
-.p-info-btn {
+/* .p-info-btn {
   padding: 7px 20px;
   font-size: 1rem;
   font-weight: 600;
@@ -77,7 +118,7 @@
 .p-info-btn:hover {
   cursor: pointer;
   background-color: var(--secondary);
-}
+} */
 
 .profile-data-box {
   width: 100%;
@@ -194,7 +235,7 @@
 }
 @media (max-width: 786px) {
   .profile {
-    width: 90% !important;
+    width: 95% !important;
     /* background-color: aquamarine; */
   }
   .p-info-img {

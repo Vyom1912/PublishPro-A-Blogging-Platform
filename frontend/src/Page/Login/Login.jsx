@@ -55,12 +55,16 @@ function Login() {
           />
         </div>
 
-        {error && <p className='error-msg' style={{ color: "red" }}>{error}</p>}
+        {error && (
+          <p className='error-msg' style={{ color: "red" }}>
+            {error}
+          </p>
+        )}
 
         <label htmlFor=''>
           <Link to='/forgot-password'>Forgot Password?</Link>
         </label>
-        <button type='submit' className='save-btn'>
+        <button type='submit' className='inputBtn'>
           Login
         </button>
       </form>

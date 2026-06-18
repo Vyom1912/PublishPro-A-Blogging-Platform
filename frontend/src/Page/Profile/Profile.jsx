@@ -12,6 +12,8 @@ function Profile() {
   const { user, logout } = useAuth();
   const id = user?._id || user?.id;
   const navigate = useNavigate();
+  const [showFullAbout, setShowFullAbout] = useState(false);
+
   // const [userData, setUserData] = useState(null);
   const [stats, setStats] = useState({
     totalBlogs: 0,
@@ -36,7 +38,7 @@ function Profile() {
     logout();
     navigate("/login");
   };
-  
+
   const fetchSavedBlogs = async () => {
     try {
       const res = await api.get("/users/saved-blogs");
@@ -90,10 +92,26 @@ function Profile() {
               <div className='p-info-data'>
                 <p>{user.email || ""}</p>
               </div>
-              <div className='p-info-data'>
-                <label htmlFor=''>About: </label>
+              <div className='p-info-data about-section'>
+                <label>About:</label>
 
-                <p>{user.about || ""}</p>
+                <div
+                  className={`about-content ${showFullAbout ? "expanded" : ""}`}>
+                  <p>{user.about || "No description added."}</p>
+
+                  {!showFullAbout && user.about?.length > 150 && (
+                    <span className='about-ellipsis'>...</span>
+                  )}
+                </div>
+
+                {user.about && user.about.length > 150 && (
+                  <button
+                    type='button'
+                    className='about-btn'
+                    onClick={() => setShowFullAbout(!showFullAbout)}>
+                    {showFullAbout ? "Show Less ↑" : "Show More ↓"}
+                  </button>
+                )}
               </div>
               <div className='p-info-data flex'>
                 <p>Total Blogs: {stats.totalBlogs}</p>
@@ -127,41 +145,16 @@ function Profile() {
               gap: "10px",
               marginBottom: "25px",
             }}>
-            {" "}
             <button
               onClick={() => setActiveBlogTab("myBlogs")}
-              className='p-info-btn'
-              style={
-                activeBlogTab === "myBlogs"
-                  ? {
-                      background: "#810b38",
-                      border: "1px solid #810b38",
-                      transition: "all .3s ease",
-                      color: "white",
-                    }
-                  : {
-                      border: "1px solid #810b38",
-                      transition: "all .3s ease",
-                    }
-              }>
+              // className='p-info-btn'
+              className={`inputBtn ${activeBlogTab === "myBlogs" ? "inputBtnActive" : ""}`}>
               My Blogs
             </button>
             <button
               onClick={() => setActiveBlogTab("savedBlogs")}
-              className='p-info-btn'
-              style={
-                activeBlogTab === "savedBlogs"
-                  ? {
-                      border: "1px solid #810b38",
-                      background: "#810b38",
-                      color: "white",
-                      transition: "all .3s ease",
-                    }
-                  : {
-                      border: "1px solid #810b38",
-                      transition: "all .3s ease",
-                    }
-              }>
+              // className='p-info-btn'
+              className={`inputBtn ${activeBlogTab === "savedBlogs" ? "inputBtnActive" : ""}`}>
               Saved Blogs
             </button>
           </div>

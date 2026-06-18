@@ -1,0 +1,23 @@
+.pagination button {
+  padding: 6px 14px;
+  border: 1px solid var(--primary);
+  background: var(--bg);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+  background: var(--secondary);
+}
+
+.active-page {
+  background: var(--primary) !important;
+  color: var(--bg);
+  border-color: #2563eb;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

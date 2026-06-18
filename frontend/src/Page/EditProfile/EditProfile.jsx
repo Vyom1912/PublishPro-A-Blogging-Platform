@@ -129,7 +129,7 @@ function EditProfile() {
           />
         </div>
 
-        <button type='submit' className='save-btn'>
+        <button type='submit' className='inputBtn'>
           Update Profile
         </button>
       </form>

@@ -108,7 +108,7 @@ function AddBlog() {
         />{" "}
         <div className='form-group'>
           <label htmlFor='description'>Description:</label>
-         
+
           <textarea
             name=''
             id='description'
@@ -165,7 +165,7 @@ function AddBlog() {
         </div>
         <RTE value={content} onChange={setContent} />
         {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type='submit' className='addblog-btn' disabled={submitting}>
+        <button type='submit' className='inputBtn' disabled={submitting}>
           {submitting ? "Publishing..." : "Add Blog"}
         </button>
       </form>

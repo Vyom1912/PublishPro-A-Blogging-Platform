@@ -58,21 +58,22 @@
 
 .pagination button {
   padding: 6px 14px;
-  border: 1px solid var(--primary);
+  color: var(--dark);
   background: var(--bg);
+  border: 1px solid var(--dark);
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
 
 .pagination button:hover {
-  background: var(--secondary);
+  background: var(--light);
 }
 
 .active-page {
-  background: var(--primary) !important;
-  color: var(--bg);
-  border-color: #2563eb;
+  color: var(--bg) !important;
+  background: var(--dark) !important;
+  /* border-color: v; */
 }
 
 .pagination button:disabled {

@@ -16,10 +16,9 @@ function ResetPassword() {
     e.preventDefault();
 
     try {
-      const { data } = await api.post(
-        `/auth/reset-password/${token}`,
-        { password },
-      );
+      const { data } = await api.post(`/auth/reset-password/${token}`, {
+        password,
+      });
       setMessage(data.message);
       setUser(null);
       navigate("/login");
@@ -41,7 +40,7 @@ function ResetPassword() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder='Enter new Password...'
         />
-        <button type='submit' className='save-btn'>
+        <button type='submit' className='inputBtn'>
           submit
         </button>
         {message && <p>{message}</p>}

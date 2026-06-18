@@ -94,7 +94,7 @@ function EditBlog() {
           </div>
           <RTE value={content} onChange={setContent} />
 
-          <button type='submit' className='addblog-btn'>
+          <button type='submit' className='inputBtn'>
             Add Blog
           </button>
         </form>
