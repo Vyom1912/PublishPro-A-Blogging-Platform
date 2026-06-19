@@ -123,103 +123,91 @@ function Profile() {
             {/* <br /> */}
           </div>
           <div className='edit-prifile-links flex'>
-            <Link to='/edit-profile' className='p-info-btn'>
+            <Link to='/edit-profile' className='inputBtn'>
               Edit Profile
             </Link>
-            {/* <Link to='/saved-blogs' className='p-info-btn'>
+            {/* <Link to='/saved-blogs' className='inputBtn'>
               Saved Blogs
             </Link> */}
-            <Link to='/edit-password' className='p-info-btn'>
+            <Link to='/edit-password' className='inputBtn'>
               Edit Password
             </Link>
-            <Link to='/login' className='p-info-btn' onClick={handleLogout}>
+            <Link to='/login' className='inputBtn' onClick={handleLogout}>
               Logout
             </Link>
           </div>
         </div>
 
-        <div className='profile-data-box flex'>
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              marginBottom: "25px",
-            }}>
+        <div className='profile-blog-box flex'>
+          <div className='p-blog-btn flex'>
             <button
               onClick={() => setActiveBlogTab("myBlogs")}
-              // className='p-info-btn'
+              // className='inputBtn'
               className={`inputBtn ${activeBlogTab === "myBlogs" ? "inputBtnActive" : ""}`}>
               My Blogs
             </button>
             <button
               onClick={() => setActiveBlogTab("savedBlogs")}
-              // className='p-info-btn'
+              // className='inputBtn'
               className={`inputBtn ${activeBlogTab === "savedBlogs" ? "inputBtnActive" : ""}`}>
               Saved Blogs
             </button>
           </div>
-          {activeBlogTab === "myBlogs" && (
-            <label htmlFor=''> Your Blogs:</label>
-          )}{" "}
-          {activeBlogTab === "savedBlogs" && (
-            <label htmlFor=''> Saved Blogs:</label>
-          )}
-          {activeBlogTab === "myBlogs" && (
-            <div
-              className='profile-data  '
-              style={{
-                transition: "all .3s ease in",
-              }}>
-              {myblogs.map((blog) => (
-                <div key={blog._id} className='my-blog-card flex'>
-                  <Card
-                    id={blog._id}
-                    title={blog.title}
-                    imgSrc={blog.featuredImage}
-                    content={blog.content}
-                  />
-                  <div className='blog-stats'>
-                    <span>❤️ {blog.likes?.length || 0}</span>
-                    <span>👁️ {blog.views || 0}</span>
-                    <span>🔖 {blog.savedBy?.length || 0}</span>
+          <div className='containerBox '>
+            {activeBlogTab === "myBlogs" && (
+              <div className='card-container '>
+                {myblogs.map((blog) => (
+                  <div key={blog._id}>
+                    <Card
+                      id={blog._id}
+                      title={blog.title}
+                      imgSrc={blog.featuredImage}
+                      content={blog.content}
+                      description={blog.description}
+                    />
+                    <div className='blogs-insight flex'>
+                      <div className='blog-stats flex'>
+                        <span>❤️{blog.likes?.length || 0}</span>
+                        <span>👁️{blog.views || 0}</span>
+                        <span>🔖{blog.savedBy?.length || 0}</span>
+                      </div>
+                      <div className='blog-actions flex'>
+                        <Link to={`/blog/${blog._id}`} className='inputBtn'>
+                          Open
+                        </Link>
+                        <Link
+                          to={`/edit-blog/${blog._id}`}
+                          className=' inputBtn '>
+                          Edit
+                        </Link>
+                        <button
+                          className=' inputBtn'
+                          onClick={() => handleDelete(blog._id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className='blog-actions flex'>
-                    <Link to={`/blog/${blog._id}`} className='blog-actions-btn'>
-                      Open
-                    </Link>
-                    <Link
-                      to={`/edit-blog/${blog._id}`}
-                      className=' blog-actions-btn edit-btn'>
-                      Edit
-                    </Link>
+                ))}
+              </div>
+            )}
 
-                    <button
-                      className='delete-btn blog-actions-btn'
-                      onClick={() => handleDelete(blog._id)}>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          {/* <label htmlFor=''> Saved Blogs: </label> */}
-          {activeBlogTab === "savedBlogs" && (
-            <div className='profile-data '>
-              {savedBlogs.map((blog) => (
-                <Link
-                  key={blog._id}
-                  to={`/blog/${blog._id}`}
-                  className='card-link'>
-                  <Card
-                    id={blog._id}
-                    title={blog.title}
-                    imgSrc={blog.featuredImage}
-                  />
-                </Link>
-              ))}
-            </div>
-          )}
+            {activeBlogTab === "savedBlogs" && (
+              <div className='card-container '>
+                {savedBlogs.map((blog) => (
+                  <Link key={blog._id} to={`/blog/${blog._id}`}>
+                    <Card
+                      id={blog._id}
+                      title={blog.title}
+                      imgSrc={blog.featuredImage}
+                      // content={blog.content}
+                      // description={blog.description}
+                    />
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

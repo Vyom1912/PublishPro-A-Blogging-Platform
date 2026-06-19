@@ -5,23 +5,23 @@
   --text: #e5e4e7;
 } */
 .nav-box {
-  background-color: var(--secondary);
   width: 100%;
   position: sticky;
   top: 0;
   z-index: 1000;
+  color: var(--bg);
+  border-bottom: 2px solid var(--dark);
+  background-color: var(--dark);
 }
 .navbar {
-  width: 85%;
+  width: 90%;
   margin: auto;
-  /* background-color: aqua; */
   justify-content: space-between;
   padding: 10px 20px;
   gap: 15px;
-  /* top: 0; */
 }
 .logo {
-  color: var(--text);
+  color: var(-);
   font-size: 2rem;
   font-weight: 800;
   text-decoration: underline;
@@ -31,7 +31,7 @@
 }
 .navlink {
   text-decoration: none;
-  color: var(--text);
+  color: var(--bg);
   font-size: 1.1rem;
   font-weight: 700;
   padding: 7px;
@@ -45,7 +45,7 @@
   height: 3px;
   bottom: 0;
   left: 50%;
-  background-color: var(--text);
+  background-color: var(--bg);
   transition: all 0.3s ease;
 }
 .navlink:hover::before {
@@ -69,23 +69,31 @@
   .logo {
     font-size: 1.5rem;
     width: 100%;
-    padding: 10px;
+    padding: 13px;
     text-decoration: none;
-    color: var(--secondary);
+    color: var(--bg);
     background-color: var(--primary);
   }
   .nav-link-box {
-    width: 80%;
+    width: 100%;
     margin: auto;
+    justify-content: center;
     gap: 15px;
-    padding: 15px 0;
+    padding: 10px 0;
+    background: var(--bg);
+  }
+  .navlink {
+    color: var(--dark);
+  }
+  .navlink::before {
+    background: var(--dark);
   }
 }
 
 @media (max-width: 565px) {
   .nav-link-box {
-    width: 90%;
-    padding: 10px;
+    /* width: 90%; */
+    padding: 7px 10px;
     gap: 10px;
   }
   .navlink {

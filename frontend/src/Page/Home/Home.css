@@ -20,11 +20,10 @@
   }
 }
 @media (max-width: 1000px) {
-  .home-blogs-box {
-    /* grid-template-columns: repeat(3, 1fr); */
+  /* .home-blogs-box {
     gap: 10px;
     row-gap: 25px;
-  }
+  } */
 }
 @media (max-width: 936px) {
   .home-blogs-box {

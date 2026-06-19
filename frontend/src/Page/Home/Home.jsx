@@ -46,8 +46,8 @@ function Home() {
   const totalPages = Math.ceil(blogs.length / blogsPerPage);
 
   return (
-    <div className='home-container'>
-      <div className='home-blogs-box'>
+    <div className='containerBox'>
+      <div className='card-container'>
         {blogs.length === 0 ? (
           <h2>No blogs found</h2>
         ) : (
@@ -58,6 +58,7 @@ function Home() {
                 title={blog.title}
                 imgSrc={blog.featuredImage}
                 content={blog.content}
+                description={blog.description}
                 author={blog.author?.name}
               />
             </Link>

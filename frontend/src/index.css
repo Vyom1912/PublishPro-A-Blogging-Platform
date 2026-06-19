@@ -18,7 +18,7 @@
   --primary: #213448;
   --secondary: #547792;
   /* --bg: #f7f6e5; */
-  --bg: #eae0cf;
+  --bg: #ffffff;
   --text: #94b4c1;
 
   --dark: #213448;
@@ -120,7 +120,28 @@ button {
   background: var(--dark);
 }
 .inputBtnActive {
-  /* flex: 1; */
   color: var(--bg);
   background: var(--dark);
+}
+.containerBox {
+  width: 90% !important;
+  margin: auto;
+  padding: 30px 10px 0;
+}
+.card-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+@media (max-width: 1024px) {
+  .card-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+@media (max-width: 500px) {
+  .containerBox {
+    width: 95% !important;
+  }
 }
