@@ -1,0 +1,28 @@
+.author-page {
+  width: 80%;
+  margin: 30px auto;
+}
+
+.author-loading {
+  text-align: center;
+  margin-top: 60px;
+  font-size: 1.1rem;
+  color: var(--muted, #888);
+}
+
+.author-all-blogs {
+  margin-top: 30px;
+}
+
+.author-all-blogs h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--primary);
+}
+
+@media (max-width: 786px) {
+  .author-page {
+    width: 90%;
+  }
+}

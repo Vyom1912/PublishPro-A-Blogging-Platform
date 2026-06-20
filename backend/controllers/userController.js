@@ -1,9 +1,5 @@
 import User from "../models/User.js";
 import Blog from "../models/Blog.js";
-import bcrypt from "bcryptjs";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
-import upload from "../middleware/uploadImage.js";
 import cloudinary from "../config/cloudinary.js";
 
 export const updateProfile = async (req, res) => {
@@ -54,34 +50,31 @@ export const toggleBookmark = async (req, res) => {
     const blogId = req.params.blogId;
     const userId = req.user._id.toString();
 
-    const alreadySaved = user.savedBlogs.some(
-      (id) => id.toString() === blogId,
+    const alreadySaved = (user.savedBlogs || []).some(
+      (bid) => bid.toString() === blogId,
     );
 
     if (alreadySaved) {
-      // Remove from user's savedBlogs and blog's savedBy
-      user.savedBlogs = user.savedBlogs.filter(
-        (id) => id.toString() !== blogId,
-      );
-      blog.savedBy = blog.savedBy.filter(
-        (id) => id.toString() !== userId,
-      );
-
-      await user.save();
-      await blog.save();
-
+      // Use atomic $pull so missing arrays on old documents are never a problem
+      await User.findByIdAndUpdate(req.user.id, {
+        $pull: { savedBlogs: blog._id },
+      });
+      await Blog.findByIdAndUpdate(blogId, {
+        $pull: { savedBy: req.user._id },
+      });
       return res.json({ success: true, bookmarked: false });
     }
 
-    // Add to both sides
-    user.savedBlogs.push(blogId);
-    blog.savedBy.push(userId);
-
-    await user.save();
-    await blog.save();
+    await User.findByIdAndUpdate(req.user.id, {
+      $addToSet: { savedBlogs: blog._id },
+    });
+    await Blog.findByIdAndUpdate(blogId, {
+      $addToSet: { savedBy: req.user._id },
+    });
 
     res.json({ success: true, bookmarked: true });
   } catch (error) {
+    console.error("toggleBookmark error:", error.message);
     res.status(500).json({
       success: false,
       message: error.message,

@@ -30,6 +30,8 @@ function SavedBlogs() {
               id={blog._id}
               title={blog.title}
               imgSrc={blog.featuredImage}
+              content={blog.content}
+              description={blog.description}
             />
           </Link>
         ))}

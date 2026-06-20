@@ -134,7 +134,24 @@ button {
   grid-template-columns: repeat(2, 1fr);
   gap: 15px;
 }
-
+.card-link {
+  width: 100%;
+  border-radius: 5px;
+  overflow: hidden;
+  border-bottom: 3.5px solid transparent;
+  box-shadow: var(--shadow);
+  transition:
+    all 0.3s ease,
+    border 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.card-link:hover {
+  cursor: pointer;
+  border-bottom: 3.5px solid var(--dark);
+  box-shadow:
+    rgba(0, 0, 0, 0.2) 0 15px 25px -5px,
+    rgba(0, 0, 0, 0.1) 0 5px 10px -5px;
+}
 @media (max-width: 1024px) {
   .card-container {
     grid-template-columns: repeat(1, 1fr);

@@ -294,22 +294,31 @@ export const toggleLike = async (req, res) => {
     }
 
     const userId = req.user._id.toString();
-    const alreadyLiked = blog.likes.some((id) => id.toString() === userId);
+    const alreadyLiked = (blog.likes || []).some(
+      (uid) => uid.toString() === userId,
+    );
 
+    // Use atomic $pull / $addToSet so missing arrays on old documents
+    // are never a problem — MongoDB creates the array if it doesn't exist.
     if (alreadyLiked) {
-      blog.likes = blog.likes.filter((id) => id.toString() !== userId);
+      await Blog.findByIdAndUpdate(req.params.id, {
+        $pull: { likes: req.user._id },
+      });
     } else {
-      blog.likes.push(req.user._id);
+      await Blog.findByIdAndUpdate(req.params.id, {
+        $addToSet: { likes: req.user._id },
+      });
     }
 
-    await blog.save();
+    const updated = await Blog.findById(req.params.id);
 
     res.json({
       success: true,
-      likesCount: blog.likes.length,
+      likesCount: updated.likes.length,
       liked: !alreadyLiked,
     });
   } catch (error) {
+    console.error("toggleLike error:", error.message);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -324,25 +333,26 @@ export const viewBlog = async (req, res) => {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    // For logged-in users: only count one view per user (deduplication).
-    // For anonymous visitors: always increment — we can't deduplicate without identity.
     if (req.user) {
-      const alreadyViewed = blog.viewedBy.some(
-        (id) => id.toString() === req.user.id.toString(),
+      const alreadyViewed = (blog.viewedBy || []).some(
+        (uid) => uid.toString() === req.user._id.toString(),
       );
       if (!alreadyViewed) {
-        blog.views += 1;
-        blog.viewedBy.push(req.user.id);
-        await blog.save();
+        await Blog.findByIdAndUpdate(req.params.id, {
+          $inc: { views: 1 },
+          $addToSet: { viewedBy: req.user._id },
+        });
       }
     } else {
-      // Anonymous view — just increment (no deduplication possible)
-      blog.views += 1;
-      await blog.save();
+      await Blog.findByIdAndUpdate(req.params.id, {
+        $inc: { views: 1 },
+      });
     }
 
-    res.status(200).json({ views: blog.views });
+    const updated = await Blog.findById(req.params.id);
+    res.status(200).json({ views: updated.views });
   } catch (error) {
+    console.error("viewBlog error:", error.message);
     res.status(500).json({ message: error.message });
   }
 };

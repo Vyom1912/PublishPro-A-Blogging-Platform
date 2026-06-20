@@ -19,6 +19,9 @@ function Navbar() {
             Home
           </Link>
 
+          {/* <Link to='/dashboard' className='navlink'>
+            Dashboar
+          </Link> */}
           {user && (
             <Link to='/add-blog' className='navlink'>
               Add Blog

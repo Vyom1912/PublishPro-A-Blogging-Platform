@@ -1,5 +1,5 @@
 import "./BlogDetails.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { BackButton, Comments } from "../../components";
@@ -14,51 +14,60 @@ import { faBookmark, faHeart } from "@fortawesome/free-solid-svg-icons";
 function BlogDetails() {
   const { user } = useAuth();
   const { id } = useParams();
-  const [blog, setBlog] = useState(null);
 
+  const [blog, setBlog] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-
   const [bookmarked, setBookmarked] = useState(false);
-
   const [countView, setCountView] = useState(0);
 
+  // Track whether we've already incremented the view for this blog id
+  const viewedRef = useRef(null);
+
+  // ------------------------------------------------------------------
+  // Single effect: re-runs whenever the blog id OR the logged-in user
+  // changes.  Fetches fresh blog data and bookmark status together so
+  // there is no race between an early null-user and a late-loading user.
+  // ------------------------------------------------------------------
   useEffect(() => {
-    fetchBlog();
-    handleView();
-  }, [id]);
+    fetchBlogAndStatus();
 
-  // Re-check like + bookmark status whenever user or blog id changes
-  useEffect(() => {
-    if (user) {
-      fetchLikeStatus();
-      fetchBookmarkStatus();
-    } else {
-      setBookmarked(false);
-      setLiked(false);
+    // Only increment view once per blog id (not on every user change)
+    if (viewedRef.current !== id) {
+      viewedRef.current = id;
+      handleView();
     }
-  }, [user, id]);
+  }, [id, user]); // re-run when user changes so liked/bookmarked refresh
 
-  const fetchBlog = async () => {
+  const fetchBlogAndStatus = async () => {
     try {
-      const res = await api.get(`/blogs/${id}`);
-      setBlog(res.data);
-      setLikesCount(res.data.likes?.length || 0);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      // Always fetch the blog (public endpoint — no auth needed)
+      const blogRes = await api.get(`/blogs/${id}`);
+      const blogData = blogRes.data;
 
-  // Called after fetchBlog resolves OR whenever user changes — sets liked state
-  const fetchLikeStatus = async () => {
-    try {
-      const res = await api.get(`/blogs/${id}`);
+      setBlog(blogData);
+      setLikesCount(blogData.likes?.length || 0);
+
+      // Derive liked state directly from the blog data we just received.
+      // At this point `user` is the up-to-date value captured by the effect.
       if (user) {
-        setLiked(
-          res.data.likes?.some((uid) => String(uid) === String(user._id || user.id)) || false,
+        const userId = String(user._id || user.id);
+        const isLiked = (blogData.likes || []).some(
+          (uid) => String(uid) === userId
         );
+        setLiked(isLiked);
+
+        // Fetch bookmark status (requires auth cookie)
+        try {
+          const bmRes = await api.get(`/users/bookmark-status/${id}`);
+          setBookmarked(bmRes.data.bookmarked);
+        } catch (_) {
+          setBookmarked(false);
+        }
       } else {
+        // Guest — no liked/bookmarked state
         setLiked(false);
+        setBookmarked(false);
       }
     } catch (error) {
       console.log(error);
@@ -74,16 +83,17 @@ function BlogDetails() {
     // Optimistic update
     const prevLiked = liked;
     const prevCount = likesCount;
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
+    const newLiked = !liked;
+    setLiked(newLiked);
+    setLikesCount(newLiked ? likesCount + 1 : likesCount - 1);
 
     try {
       const res = await api.put(`/blogs/${id}/like`, {});
-      // Sync with server's authoritative values
+      // Overwrite with authoritative server values
       setLiked(res.data.liked);
       setLikesCount(res.data.likesCount);
     } catch (error) {
-      // Rollback on failure
+      // Rollback
       setLiked(prevLiked);
       setLikesCount(prevCount);
       console.log(error);
@@ -102,28 +112,16 @@ function BlogDetails() {
 
     try {
       const res = await api.post(`/users/bookmark/${id}`, {});
-      // Sync with server's authoritative value
       setBookmarked(res.data.bookmarked);
     } catch (error) {
-      // Rollback on failure
+      // Rollback
       setBookmarked(prevBookmarked);
-      console.log(error);
-    }
-  };
-
-  const fetchBookmarkStatus = async () => {
-    try {
-      // Cookie is sent automatically — no Authorization header needed
-      const res = await api.get(`/users/bookmark-status/${id}`);
-      setBookmarked(res.data.bookmarked);
-    } catch (error) {
       console.log(error);
     }
   };
 
   const handleView = async () => {
     try {
-      // optionalAuth on the backend — works for both guests and logged-in users
       const res = await api.patch(`/blogs/${id}/view`, {});
       setCountView(res.data.views);
     } catch (error) {
