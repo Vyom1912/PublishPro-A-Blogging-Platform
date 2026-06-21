@@ -21,18 +21,12 @@ function ForgotPassword() {
   };
 
   return (
-    <div className='login edit-password flex'>
+    <div className='formBox edit-password flex'>
       <h1 className='text-3xl font-bold underline'>
         Send Request to Email for Reset Password
       </h1>
 
-      <form onSubmit={handleSubmit} className='flex f-form'>
-        {/* <input
-          type='email'
-          placeholder='Enter email'
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        /> */}
+      <form onSubmit={handleSubmit} className='flex formContainer'>
         <InputBox
           label='Enter Email'
           type='text'

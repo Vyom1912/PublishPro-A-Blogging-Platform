@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
-import "./Login.css";
+// import "./Login.css";
+import InputBox from "../../components/InputBox/InputBox";
 
 function Login() {
   const { setUser } = useAuth();
@@ -29,31 +30,27 @@ function Login() {
   };
 
   return (
-    <div className='login flex'>
+    <div className='formBox flex'>
       <h1 className='text-3xl font-bold underline'>Login</h1>
 
-      <form className='flex f-form' onSubmit={handleSubmit}>
-        <div className='form-group'>
-          <label htmlFor='email'>Email</label>
-          <input
-            type='email'
-            id='email'
-            value={email}
-            name='email'
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder='Enter email...'
-          />
-        </div>
-        <div className='form-group'>
-          <label htmlFor='password'>Password</label>
-          <input
-            type='password'
-            id='password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Enter password...'
-          />
-        </div>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
+        <InputBox
+          label='Email'
+          type='email'
+          id='email'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder='Enter email...'
+        />
+
+        <InputBox
+          label='Password'
+          type='password'
+          id='password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder='Enter password...'
+        />
 
         {error && (
           <p className='error-msg' style={{ color: "red" }}>
@@ -64,10 +61,12 @@ function Login() {
         <label htmlFor=''>
           <Link to='/forgot-password'>Forgot Password?</Link>
         </label>
+
         <button type='submit' className='inputBtn'>
           Login
         </button>
       </form>
+
       <label htmlFor=''>
         Don&apos;t have an account?{" "}
         <Link to='/signup' className='text-blue-600 bold'>

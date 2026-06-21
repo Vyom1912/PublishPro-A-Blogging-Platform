@@ -28,10 +28,10 @@ function ResetPassword() {
   };
 
   return (
-    <div className='login edit-password flex'>
+    <div className='formBox edit-password flex'>
       <h1 className='text-3xl font-bold underline'>Reset Password</h1>
 
-      <form onSubmit={handleSubmit} className='flex f-form'>
+      <form onSubmit={handleSubmit} className='flex formContainer'>
         <InputBox
           label='Enter new Password'
           type='password'

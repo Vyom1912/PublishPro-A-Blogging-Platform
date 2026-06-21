@@ -5,6 +5,7 @@ import api from "../../api/axios";
 import { FaCamera } from "react-icons/fa";
 
 import "./EditProfile.css";
+import InputBox from "../../components/InputBox/InputBox";
 
 function EditProfile() {
   const { user, setUser } = useAuth();
@@ -81,37 +82,30 @@ function EditProfile() {
           />
         </div>
 
-        <div className='form-group'>
-          <label htmlFor='userName'>Name: </label>
-
-          <input
-            type='text'
-            id='userName'
-            value={formData.name}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                name: e.target.value,
-              })
-            }
-          />
-        </div>
-
-        <div className='form-group'>
-          <label htmlFor='userEmail'>Email:</label>
-
-          <input
-            type='email'
-            id='userEmail'
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                email: e.target.value,
-              })
-            }
-          />
-        </div>
+        <InputBox
+          label='Name:'
+          type='text'
+          id='userName'
+          value={formData.name}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              name: e.target.value,
+            })
+          }
+        />
+        <InputBox
+          label='Email:'
+          type='email'
+          id='email'
+          value={formData.email}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              email: e.target.value,
+            })
+          }
+        />
 
         <div className='form-group'>
           <label htmlFor='about'>About:</label>

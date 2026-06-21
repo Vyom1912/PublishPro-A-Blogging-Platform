@@ -2,12 +2,8 @@
   width: 100%;
   height: fit-content;
   gap: 10px;
-  /* border-radius: 5px; */
   align-items: flex-start;
   background-color: var(--bg);
-  /* overflow: hidden; */
-  /* border-bottom: 3.5px solid transparent;
-  box-shadow: var(--shadow); */
   transition:
     all 0.3s ease,
     border 0.2s ease,

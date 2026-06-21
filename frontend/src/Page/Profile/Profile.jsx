@@ -44,17 +44,14 @@ function Profile() {
 
           <main>
             <div className='containerBox '>
-              {activeTab === "overview" && (
-                <div className='card-container'>
-                  <UserOverview
+              {activeTab === "overview" && 
+                  (<UserOverview
                     author={user}
                     stats={stats}
                     blogs={myBlogs}
                     isOwner={true}
-                    onViewAll={() => setActiveTab("myBlogs")}
-                  />
-                </div>
-              )}
+                  />)
+              }
 
               {activeTab === "addBlog" && <AddBlog />}
 
@@ -62,6 +59,7 @@ function Profile() {
                 <BlogCardList
                   blogs={myBlogs}
                   showActions={true}
+                  isLinked={false}
                   onDelete={handleDelete}
                 />
               )}
@@ -70,6 +68,7 @@ function Profile() {
                 <BlogCardList
                   blogs={savedBlogs}
                   showActions={false}
+                  isLinked={true}
                   onDelete={handleDelete}
                 />
               )}

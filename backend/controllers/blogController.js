@@ -257,7 +257,7 @@ export const getAutherInfo = async (req, res) => {
 
     const blogs = await Blog.find({ author: req.params.id })
       .sort({ createdAt: -1 })
-      .select("title featuredImage likes views savedBy createdAt");
+      .select("title description featuredImage likes views savedBy createdAt");
 
     const totalLikes = blogs.reduce((sum, b) => sum + b.likes.length, 0);
     const totalViews = blogs.reduce((sum, b) => sum + b.views, 0);

@@ -1,14 +1,12 @@
-// import React from "react";
 import api from "../../api/axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { BackButton, UserOverview, BlogCardList } from "../../components";
+import { BackButton, UserOverview } from "../../components";
 import "./AuthorProfile.css";
 
 function AuthorProfile() {
   const { id } = useParams();
   const [data, setData] = useState(null);
-  const [showAllBlogs, setShowAllBlogs] = useState(false);
 
   useEffect(() => {
     const fetchAuthor = async () => {
@@ -22,27 +20,19 @@ function AuthorProfile() {
     fetchAuthor();
   }, [id]);
 
-  if (!data) return <p className="author-loading">Loading...</p>;
+  if (!data) return <p className='author-loading'>Loading...</p>;
 
   const { author, blogs, stats } = data;
 
   return (
-    <div className="author-page containerBox">
+    <div className='containerBox'>
       <BackButton />
       <UserOverview
         author={author}
         stats={stats}
         blogs={blogs}
         isOwner={false}
-        onViewAll={() => setShowAllBlogs(true)}
       />
-
-      {showAllBlogs && (
-        <div className="author-all-blogs">
-          <h3>All Blogs by {author.name}</h3>
-          <BlogCardList blogs={blogs} showActions={false} />
-        </div>
-      )}
     </div>
   );
 }

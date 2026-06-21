@@ -11,7 +11,7 @@ function InputBox({ label, type = "text", id, value, onChange, placeholder }) {
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
   return (
-    <div className='form-group'>
+    <div className='form-group flex'>
       <label for={id}>{label} </label>
       <div className='form-input-box'>
         <input
@@ -27,15 +27,6 @@ function InputBox({ label, type = "text", id, value, onChange, placeholder }) {
             className='input-eye-icone'
             icon={showPassword ? faEye : faEyeSlash}
             onClick={() => setShowPassword(!showPassword)}
-            style={
-              {
-                //   cursor: "pointer",
-                //   position: "absolute",
-                //   right: "10px",
-                //   top: "50%",
-                //   transform: "translateY(-50%)",
-              }
-            }
           />
         )}
       </div>

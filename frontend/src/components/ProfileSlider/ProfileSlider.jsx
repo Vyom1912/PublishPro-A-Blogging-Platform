@@ -24,9 +24,9 @@ function ProfileSlider({ user, activeTab, setActiveTab, logout }) {
       <div className='user-info'>
         <p className=''>{user.name}</p>
       </div>
-      <div className='user-info'>
+      {/* <div className='user-info'>
         <p>{user.email || ""}</p>
-      </div>
+      </div> */}
       <div className='user-info-links'>
         <button className='inputBtn' onClick={() => setActiveTab("overview")}>
           Overview

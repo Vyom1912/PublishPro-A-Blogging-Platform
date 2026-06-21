@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import "./SignUp.css";
+import InputBox from "../../components/InputBox/InputBox";
 
 function SignUp() {
   const { setUser } = useAuth();
@@ -16,10 +17,10 @@ function SignUp() {
     e.preventDefault();
     setError("");
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters");
-      return;
-    }
+    // if (password.length < 8) {
+    //   setError("Password must be at least 8 characters");
+    //   return;
+    // }
 
     try {
       const res = await api.post("/auth/register", { name, email, password });
@@ -33,41 +34,36 @@ function SignUp() {
   };
 
   return (
-    <div className='login flex'>
+    <div className='formBox flex'>
       <h1 className='text-3xl font-bold underline'>Sign Up</h1>
 
-      <form className='flex f-form' onSubmit={handleSubmit}>
-        <div className='form-group'>
-          <label htmlFor='name'>Name</label>
-          <input
-            type='text'
-            id='name'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder='Enter Name...'
-          />
-        </div>
-        <div className='form-group'>
-          <label htmlFor='email'>Email</label>
-          <input
-            type='email'
-            id='email'
-            value={email}
-            name='email'
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder='Enter email...'
-          />
-        </div>
-        <div className='form-group'>
-          <label htmlFor='password'>Password</label>
-          <input
-            type='password'
-            id='password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder='Enter password...'
-          />
-        </div>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
+        <InputBox
+          label='Name'
+          type='text'
+          id='name'
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder='Enter Name...'
+        />
+
+        <InputBox
+          label='Email'
+          type='email'
+          id='email'
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder='Enter email...'
+        />
+
+        <InputBox
+          label='Password'
+          type='password'
+          id='password'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder='Enter password...'
+        />
 
         {error && <p style={{ color: "red" }}>{error}</p>}
 

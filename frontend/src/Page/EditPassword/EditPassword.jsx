@@ -42,10 +42,10 @@ function EditPassword() {
   };
 
   return (
-    <div className='login edit-password flex'>
+    <div className='formBox edit-password flex'>
       <h1 className='text-3xl font-bold underline'>Change Password</h1>
 
-      <form className='flex f-form' onSubmit={handleSubmit}>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
         <InputBox
           label='Current Password'
           type='password'

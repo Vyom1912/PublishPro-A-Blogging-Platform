@@ -23,10 +23,10 @@
 
   --dark: #213448;
   --mid-dark: #547792;
-  --light: #94b4c1;
+  --light: #f0fbff;
 
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* --shadow:  rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px; */
+  --shadow: 0 3px 5px -2px var(--mid-dark);
 
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
@@ -138,7 +138,7 @@ button {
   width: 100%;
   border-radius: 5px;
   overflow: hidden;
-  border-bottom: 3.5px solid transparent;
+  /* border-bottom: 3.5px solid transparent; */
   box-shadow: var(--shadow);
   transition:
     all 0.3s ease,
@@ -147,10 +147,30 @@ button {
 }
 .card-link:hover {
   cursor: pointer;
-  border-bottom: 3.5px solid var(--dark);
-  box-shadow:
+  /* border-bottom: 3.5px solid var(--dark); */
+  /* box-shadow:
     rgba(0, 0, 0, 0.2) 0 15px 25px -5px,
-    rgba(0, 0, 0, 0.1) 0 5px 10px -5px;
+    rgba(0, 0, 0, 0.1) 0 5px 10px -5px; */
+  box-shadow: 0 5px 7px -2px var(--mid-dark);
+}
+.formBox {
+  width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  gap: 25px;
+  flex-direction: column;
+  color: var(--dark);
+  background-color: var(--light);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.formContainer {
+  width: 100%;
+  flex-direction: column;
+  gap: 17px;
 }
 @media (max-width: 1024px) {
   .card-container {
@@ -160,5 +180,18 @@ button {
 @media (max-width: 500px) {
   .containerBox {
     width: 95% !important;
+  }
+}
+@media (max-width: 786px) {
+  .formBox {
+    width: 480px;
+    padding: 20px 10px;
+  }
+}
+
+@media (max-width: 550px) {
+  .formBox {
+    padding: 10px;
+    width: 320px;
   }
 }

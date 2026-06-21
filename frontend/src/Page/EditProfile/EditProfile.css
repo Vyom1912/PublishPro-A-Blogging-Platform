@@ -1,5 +1,4 @@
 .edit-profile-card {
-  /* width: 50%; */
   width: 600px;
   margin: 30px auto;
   padding: 20px;
@@ -10,38 +9,13 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
+
 .edit-profile-card form {
   width: 100%;
   flex-direction: column;
   gap: 7px;
 }
-.form-group {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  justify-content: flex-start;
-  text-align: left;
-  /* margin-bottom: 20px; */
-}
-.form-group label {
-  font-weight: 600;
-  padding-left: 15px;
-  letter-spacing: 1px;
-  color: var(--text);
-}
-.form-group input,
-.form-group textarea {
-  width: 100% !important;
-  padding: 0px 15px;
-  border-radius: 5px;
-}
 
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  background: var(--bg);
-}
 .avatar-container {
   position: relative;
   width: 150px;
@@ -72,30 +46,6 @@
   border: 2px solid var(--text);
   background: var(--secondary);
 }
-/* .avatar-overlay {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-} */
-
-.save-btn {
-  /* position: absolute; */
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  /* background: linear-gradient(90deg, #4f46e5, #3b82f6); */
-  background: var(--text);
-  color: var(--secondary);
-  transition: 0.3s;
-}
-
-.save-btn:hover {
-  transform: translateY(-1px);
-}
 @media (max-width: 786px) {
   .edit-profile-card {
     width: 480px;
@@ -109,13 +59,5 @@
   .edit-profile-card {
     padding: 10px;
     width: 330px;
-  }
-
-  .form-group label {
-    padding-left: 10px;
-  }
-  .form-group input,
-  .form-group textarea {
-    padding: 0px 10px;
   }
 }

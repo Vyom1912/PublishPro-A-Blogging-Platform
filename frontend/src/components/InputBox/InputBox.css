@@ -1,9 +1,47 @@
+.form-group {
+  width: 100%;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: flex-start;
+  text-align: left;
+}
+.form-group label {
+  font-weight: 600;
+  padding-left: 4px;
+  letter-spacing: 1px;
+  color: var(--dark);
+}
+.form-group input,
+.form-group textarea {
+  outline: none;
+  width: 100% !important;
+  padding: 5px 15px;
+  border-radius: 5px;
+  /* background: var(--bg); */
+  color: var(--dark);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--dark);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  background: var(--bg);
+}
 .form-input-box {
   position: relative;
+  flex: 1;
 }
 .input-eye-icone {
   cursor: pointer;
   position: absolute;
   top: 26%;
   right: 8px;
+  color: var(--dark);
+}
+@media (max-width: 550px) {
+  .form-group input,
+  .form-group textarea {
+    padding: 0px 8px;
+  }
 }
