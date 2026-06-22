@@ -63,8 +63,8 @@ function EditProfile() {
   }
 
   return (
-    <div className='edit-profile-card flex'>
-      <form onSubmit={handleSubmit} className='flex'>
+    <div className='formBox flex'>
+      <form onSubmit={handleSubmit} className='flex formContainer'>
         <div className='avatar-container'>
           <label htmlFor='profile-image'>
             <img src={imagePreview} alt='Profile' className='profile-avatar' />

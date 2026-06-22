@@ -140,7 +140,6 @@ function AddBlog() {
             value={tags}
             onChange={(e) => setTags(e.target.value)}
           />
-
           <small>Separate tags with commas.</small>
         </div>
         <div className='form-group'>

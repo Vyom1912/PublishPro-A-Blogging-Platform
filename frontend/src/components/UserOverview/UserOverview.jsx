@@ -33,26 +33,27 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
               </div>
             ))}
         </div>
-
-        <div className='uo-identity flex'>
-          <h2 className='uo-name'>{author.name}</h2>
-          {isOwner && <p className='uo-info'>{author.email}</p>}
-          {author.createdAt && (
-            <p className='uo-info'>
-              Joined{" "}
-              {new Date(author.createdAt).toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
-          )}
-        </div>
+        {!isOwner && (
+          <div className='uo-identity flex'>
+            <h2 className='uo-name'>{author.name}</h2>
+            <p className='uo-info'>{author.email}</p>
+            {author.createdAt && (
+              <p className='uo-info'>
+                Joined{" "}
+                {new Date(author.createdAt).toLocaleDateString("en-US", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* About */}
       {aboutText && (
         <div className='uo-item uo-bg flex'>
-          <label className='uo-label'>About</label>
+          <label className='lableTitle'>About</label>
           <p className='uo-text'>{aboutText}</p>
         </div>
       )}
@@ -82,7 +83,7 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
       {/* Blogs section */}
       {displayedBlogs.length > 0 && (
         <div className='uo-item flex' ref={blogsRef}>
-          <h3 className='uo-label'>
+          <h3 className='lableTitle'>
             {showAll ? `All Blogs (${blogs.length})` : "Latest Blogs"}
           </h3>
           <BlogCardList blogs={displayedBlogs} showActions={false} />
@@ -96,7 +97,10 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
               className='inputBtn'
               onClick={() => {
                 setShowAll(false);
-                blogsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                blogsRef.current?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
               }}>
               Show Less ↑
             </button>
@@ -108,4 +112,3 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
 }
 
 export default UserOverview;
-

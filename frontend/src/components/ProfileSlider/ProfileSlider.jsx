@@ -1,61 +1,66 @@
-// import React from "react";
-
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./ProfileSlider.css";
+
 function ProfileSlider({ user, activeTab, setActiveTab, logout }) {
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  const handleTab = (tab) => {
+    setActiveTab(tab);
+    setMenuOpen(false); // close menu after selecting on mobile
+  };
+
   return (
-    <aside className='sidebar'>
-      <div className='user-info'>
+    <aside className='sidebar flex'>
+      <div className='user-info flex'>
         {user.image ? (
-          <img src={user.image} alt={user.name} />
+          <img src={user.image} alt={user.name} className='user-img' />
         ) : (
-          <div className='avatar-placeholder'>
+          <div className='avatar-placeholder flex'>
             {user.name?.charAt(0).toUpperCase()}
           </div>
         )}
       </div>
-      <div className='user-info'>
-        <p className=''>{user.name}</p>
+
+      {/* Name + hamburger row */}
+      <div className='user-info sidebar-top-row flex'>
+        <p>{user.name}</p>
+
+        <button
+          className='sidebar-hamburger'
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label='Toggle menu'>
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
-      {/* <div className='user-info'>
-        <p>{user.email || ""}</p>
-      </div> */}
-      <div className='user-info-links'>
-        <button className='inputBtn' onClick={() => setActiveTab("overview")}>
+
+      <div className={`user-info-links flex ${menuOpen ? "links-open" : ""}`}>
+        <button className='inputBtn' onClick={() => handleTab("overview")}>
           Overview
         </button>
         <button className='inputBtn'>
-          {" "}
-          <Link to='/add-blog'>+ Add Blog</Link>
+          <Link to='/add-blog' onClick={() => setMenuOpen(false)}>
+            + Add Blog
+          </Link>
         </button>
-
-        <button className='inputBtn' onClick={() => setActiveTab("myBlogs")}>
+        <button className='inputBtn' onClick={() => handleTab("myBlogs")}>
           My Blogs
         </button>
-
-        <button className='inputBtn' onClick={() => setActiveTab("savedBlogs")}>
+        <button className='inputBtn' onClick={() => handleTab("savedBlogs")}>
           Saved Blogs
         </button>
-
-        <button
-          className='inputBtn'
-          onClick={() => setActiveTab("editProfile")}>
+        <button className='inputBtn' onClick={() => handleTab("editProfile")}>
           Edit Profile
         </button>
-
-        <button
-          className='inputBtn'
-          onClick={() => setActiveTab("editPassword")}>
+        <button className='inputBtn' onClick={() => handleTab("editPassword")}>
           Edit Password
         </button>
-
         <button className='inputBtn' onClick={handleLogout}>
           Logout
         </button>

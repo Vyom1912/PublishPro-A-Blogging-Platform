@@ -1,9 +1,30 @@
 .container {
   margin: auto;
 }
+
 .profile {
   width: 100%;
   margin: 30px auto;
-  overflow: hidden;
   align-items: flex-start;
+  gap: 24px;
+}
+
+.profile main {
+  flex: 1;
+  min-width: 0;
+}
+.profile main .containerBox {
+  padding: 0;
+}
+@media (max-width: 768px) {
+  .profile {
+    flex-direction: column;
+    gap: 0;
+  }
+  .profile .containerBox {
+    width: 100% !important;
+  }
+  .profile main {
+    width: 100%;
+  }
 }
