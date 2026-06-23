@@ -1,0 +1,26 @@
+.blogs-insight {
+  padding: 5px 10px 10px;
+  justify-content: space-between;
+}
+.blog-stats {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--dark);
+  gap: 10px;
+}
+.blog-actions {
+  gap: 10px;
+}
+.blogs-insight .inputBtn {
+  font-size: 0.8rem !important;
+  padding: 4px 10px;
+}
+@media (max-width: 400px) {
+  .blogs-insight {
+    margin: 20px 20px 0;
+    border-top: 1px solid var(--mid-dark);
+    gap: 10px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

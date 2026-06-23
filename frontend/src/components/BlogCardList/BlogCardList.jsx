@@ -1,6 +1,6 @@
 import { Card } from "..";
 import { Link } from "react-router-dom";
-
+import "./BlogCardList.css";
 function BlogCardList({ blogs, showActions = false, label, onDelete }) {
   return (
     <>

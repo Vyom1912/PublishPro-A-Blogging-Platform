@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
-// import "./Login.css";
+import "./Login.css";
 import InputBox from "../../components/InputBox/InputBox";
 
 function Login() {
@@ -30,7 +30,7 @@ function Login() {
   };
 
   return (
-    <div className='formBox flex'>
+    <div className='formBox flex' style={{ marginTop: "40px" }}>
       <h1 className='text-3xl font-bold underline'>Login</h1>
 
       <form className='flex formContainer' onSubmit={handleSubmit}>

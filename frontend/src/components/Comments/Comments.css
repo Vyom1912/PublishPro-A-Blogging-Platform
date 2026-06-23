@@ -1,6 +1,6 @@
 /* comment */
 .comments-section {
-  margin-top: 2rem;
+  margin: 2rem 0;
 }
 
 .add-comment-box {
@@ -11,28 +11,57 @@
 }
 
 .add-comment-box textarea {
+  width: 100%;
   padding: 10px;
   outline: none;
-  border: 1px solid var(--primary);
+  border: 1px solid var(--mid-dark);
+  color: var(--dark);
+  background: var(--light);
   border-radius: 8px;
   transition: all 0.3s ease;
 }
 .add-comment-box textarea:focus {
-  border: 3px solid var(--primary);
+  background: var(--bg);
+  border: 1px solid var(--dark);
 }
-.add-comment-box button {
-  width: 100%;
+.add-comment-box .inputBtn {
+  background: var(--light);
+}
+.add-comment-box .inputBtn:hover {
   color: var(--bg);
-  border-radius: 7px;
-  background-color: var(--primary);
-  padding: 10px 20px;
-  cursor: pointer;
+  background: var(--dark);
 }
 
 .comment-card {
   padding: 12px;
-  border: 1px solid #ddd;
+  color: var(--dark);
+  border: 1px solid var(--mid-dark);
+  box-shadow: var(--shadow);
   border-radius: 10px;
   margin-bottom: 10px;
   text-align: left;
+}
+.comment-card p {
+  width: 100%;
+  padding: 5px 10px;
+  overflow-wrap: break-word;
+}
+.edit-comment textarea {
+  width: 100%;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: var(--light);
+  outline: none;
+}
+.comment-actions {
+  margin-top: 10px;
+  gap: 15px;
+}
+
+.comment-actions button {
+  padding: 4px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--bg);
+  background: var(--dark);
 }

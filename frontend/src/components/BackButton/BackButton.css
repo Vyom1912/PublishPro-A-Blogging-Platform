@@ -1,18 +1,24 @@
 .back-btn {
   padding: 7px 16px;
-  border: 1px solid var(--primary);
+  color: var(--bg) !important;
+  border: 1px solid var(--dark);
   border-radius: 8px;
   cursor: pointer;
   position: absolute;
   top: 0;
   right: 0;
-  /* margin-bottom: 20px; */
   font-weight: 500;
-  background-color: var(--primary);
+  background-color: var(--dark);
   color: var(--secondary);
   transition: all 0.3s ease;
 }
 .back-btn:hover {
-  color: var(--primary);
-  background: var(--secondary);
+  color: var(--dark) !important;
+  background: var(--bg);
+}
+@media (max-width: 500px) {
+  .back-btn {
+    position: relative;
+    margin: auto;
+  }
 }

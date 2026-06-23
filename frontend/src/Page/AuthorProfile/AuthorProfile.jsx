@@ -26,7 +26,7 @@ function AuthorProfile() {
 
   return (
     <div className='containerBox'>
-      <BackButton />
+      {/* <BackButton /> */}
       <UserOverview
         author={author}
         stats={stats}

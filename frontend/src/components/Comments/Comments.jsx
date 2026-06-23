@@ -71,17 +71,19 @@ function Comments() {
   return (
     <div className='comments-section'>
       <div className='add-comment-box'>
-        <h3>Add Comment</h3>
+        <h3 className='lableTitle'>Add Comment</h3>
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder='Write your comment...'
           rows='4'
         />
-        <button onClick={submitComment}>Post Comment</button>
+        <button onClick={submitComment} className='inputBtn'>
+          Post Comment
+        </button>
       </div>
 
-      <h2>Comments ({comments.length})</h2>
+      <h2 className='lableTitle'>Comments ({comments.length})</h2>
 
       {comments.length === 0 ? (
         <p>No comments yet.</p>
@@ -93,14 +95,16 @@ function Comments() {
             </p>
 
             {editingId === c._id ? (
-              <>
+              <div className='edit-comment'>
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                 />
-                <button onClick={handleUpdateComment}>Save</button>
-                <button onClick={() => setEditingId(null)}>Cancel</button>
-              </>
+                <div className='comment-actions  flex'>
+                  <button onClick={handleUpdateComment}>Save</button>
+                  <button onClick={() => setEditingId(null)}>Cancel</button>
+                </div>
+              </div>
             ) : (
               <>
                 <p>{c.content}</p>
@@ -109,7 +113,7 @@ function Comments() {
                     The backend populates comment.user._id as an ObjectId, and
                     user.id in AuthContext is normalised to a plain string. */}
                 {user && String(user.id) === String(c.user?._id) && (
-                  <div className='comment-actions'>
+                  <div className='comment-actions  flex'>
                     <button onClick={() => handleEditComment(c)}>Edit</button>
                     <button onClick={() => handleDeleteComment(c._id)}>
                       Delete

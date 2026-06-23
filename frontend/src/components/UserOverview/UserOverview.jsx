@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { BlogCardList } from "../index.js";
+import { BackButton, BlogCardList } from "../index.js";
 import "./UserOverview.css";
 
 function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
@@ -107,6 +107,7 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
           )}
         </div>
       )}
+      {!isOwner && <BackButton />}
     </div>
   );
 }

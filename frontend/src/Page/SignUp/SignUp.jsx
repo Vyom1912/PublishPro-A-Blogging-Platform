@@ -34,7 +34,7 @@ function SignUp() {
   };
 
   return (
-    <div className='formBox flex'>
+    <div className='formBox flex' style={{ marginTop: "40px" }}>
       <h1 className='text-3xl font-bold underline'>Sign Up</h1>
 
       <form className='flex formContainer' onSubmit={handleSubmit}>

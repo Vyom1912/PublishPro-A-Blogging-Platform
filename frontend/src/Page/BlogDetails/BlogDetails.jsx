@@ -53,7 +53,7 @@ function BlogDetails() {
       if (user) {
         const userId = String(user._id || user.id);
         const isLiked = (blogData.likes || []).some(
-          (uid) => String(uid) === userId
+          (uid) => String(uid) === userId,
         );
         setLiked(isLiked);
 
@@ -135,7 +135,6 @@ function BlogDetails() {
 
   return (
     <div className='blog-container'>
-      <BackButton />
       <h1 className='blog-title'>{blog.title}</h1>
       <div className='flex blog-title-details'>
         <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
@@ -176,29 +175,26 @@ function BlogDetails() {
             </button>
 
             <p className='blog-detail-item'>Views: {countView}</p>
+            <div className='blog-details-box flex'>
+              <p className='blog-detail-item'>label: {blog.label}</p>
+              <div className='blog-detail-item'>
+                {blog.tags?.map((tag) => (
+                  <span key={tag} className='tag  '>
+                    #{tag}
+                    {"  "}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <p>
-        {" "}
-        <b> Description: </b>
-        {blog.description}
-      </p>
-      <p>
-        {" "}
-        <b> label: </b> {blog.label}
-      </p>
-      <div className='blog-tags'>
-        {blog.tags?.map((tag) => (
-          <span key={tag} className='tag'>
-            #{tag}{" "}
-          </span>
-        ))}
-      </div>
+
       <div className='blog-content'>
         <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
       </div>
       <Comments />
+      <BackButton />
     </div>
   );
 }

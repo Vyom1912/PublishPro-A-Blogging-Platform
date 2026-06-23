@@ -1,5 +1,6 @@
 .user-overview {
   width: 100%;
+  position: relative;
   flex-direction: column;
   /* gap: 20px; */
   align-items: flex-start;

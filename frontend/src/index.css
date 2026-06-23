@@ -156,7 +156,7 @@ button {
 .formBox {
   width: 600px;
   margin: 0px auto;
-  padding: 0 20px;
+  padding: 20px;
   border-radius: 10px;
   backdrop-filter: blur(10px);
   gap: 25px;
@@ -223,5 +223,14 @@ button {
   .formBox {
     padding: 10px;
     width: 320px;
+  }
+  .lableTitle {
+    background: linear-gradient(
+      90deg,
+      var(--dark) 0%,
+      var(--dark) 35%,
+      transparent 85%,
+      transparent 100%
+    );
   }
 }
