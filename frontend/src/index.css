@@ -5,28 +5,13 @@
   box-sizing: border-box;
 }
 :root {
-  /* --secondary: #4b5694;
-  --primary: #111844;
-  --bg: #eae0cf;
-  --third: #e5e4e7; */
-
-  /* --primary: #810b38;
-  --secondary: #f1e2d1;
-  --bg: #dcc3aa;
-  --text: #541a1a; */
-
-  --primary: #213448;
-  --secondary: #547792;
-  /* --bg: #f7f6e5; */
-  --bg: #ffffff;
-  --text: #94b4c1;
-
   --dark: #213448;
   --mid-dark: #547792;
   --light: #f0fbff;
+  --bg: #ffffff;
+  --shadow: 0 3px 5px -2px var(--mid-dark);
 
   /* --shadow:  rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px; */
-  --shadow: 0 3px 5px -2px var(--mid-dark);
 
   --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --heading: system-ui, "Segoe UI", Roboto, sans-serif;
