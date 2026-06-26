@@ -16,7 +16,10 @@ connectDB();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "https://publishpro-a-blogging-platform.onrender.com",
+    ],
     credentials: true,
   }),
 );
