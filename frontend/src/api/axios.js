@@ -6,7 +6,7 @@ import axios from "axios";
 // Without this, the backend auth middleware would never see the tokens.
 const api = axios.create({
   // baseURL: "http://localhost:5000/api",
-baseURL: "https://publishpro-a-blogging-platform-backend.onrender.com",
+baseURL: "https://publishpro-a-blogging-platform-backend.onrender.com/api",
   withCredentials: true, // IMPORTANT: sends cookies cross-origin
 });
 
