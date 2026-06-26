@@ -18,20 +18,22 @@ import {
 // if we ever change the cookie settings (e.g. secure: true in production).
 const setAuthCookies = (res, accessToken, refreshToken) => {
   // httpOnly prevents JavaScript from reading the token (XSS protection).
-  // secure should be true in production (HTTPS only).
-  // sameSite: "lax" allows the cookie to be sent on top-level navigations
-  // and same-site requests, which is right for a standard web app.
+  // In production, frontend and backend are on different subdomains (cross-origin),
+  // so we must use sameSite: "none" + secure: true to allow cookies to be sent.
+  // sameSite: "lax" blocks cookies on cross-origin requests entirely.
+  const isProduction = process.env.NODE_ENV === "production";
+
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 };
@@ -199,10 +201,11 @@ export const refreshToken = async (req, res) => {
     const newAccessToken = generateAccessToken(user);
 
     // Only the access token is refreshed; the refresh token stays the same
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 15 * 60 * 1000,
     });
 
