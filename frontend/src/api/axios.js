@@ -5,7 +5,8 @@ import axios from "axios";
 // httpOnly cookies (accessToken, refreshToken) with every request.
 // Without this, the backend auth middleware would never see the tokens.
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  // baseURL: "http://localhost:5000/api",
+baseURL  :"https://publishpro-a-blogging-platform-backend.onrender.com",
   withCredentials: true, // IMPORTANT: sends cookies cross-origin
 });
 
