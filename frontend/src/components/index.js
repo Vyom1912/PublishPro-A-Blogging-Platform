@@ -9,6 +9,8 @@ import Pagination from "./Pagination/Pagination";
 import BlogCardList from "./BlogCardList/BlogCardList";
 import ProfileSlider from "./ProfileSlider/ProfileSlider";
 import UserOverview from "./UserOverview/UserOverview";
+import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+import PublicOnlyRoute from "./PublicOnlyRoute/PublicOnlyRoute";
 export {
   Navbar,
   Searchbox,
@@ -21,4 +23,6 @@ export {
   BlogCardList,
   ProfileSlider,
   UserOverview,
+  ProtectedRoute,
+  PublicOnlyRoute,
 };

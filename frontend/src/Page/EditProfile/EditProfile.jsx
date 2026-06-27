@@ -59,7 +59,7 @@ function EditProfile() {
   };
 
   if (!user) {
-    return <h2>Please Login First</h2>;
+    return null; // ProtectedRoute handles redirect
   }
 
   return (

@@ -223,8 +223,15 @@ export const logoutUser = async (req, res) => {
   // Delete just the session for the current refresh token
   await Session.deleteOne({ refreshToken: req.cookies.refreshToken });
 
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  const isProduction = process.env.NODE_ENV === "production";
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  };
+
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshToken", cookieOptions);
 
   res.json({ message: "Logged out successfully" });
 };
@@ -236,8 +243,15 @@ export const logoutAllDevices = async (req, res) => {
   // req.user is set by authMiddleware
   await Session.deleteMany({ user: req.user._id });
 
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  const isProduction = process.env.NODE_ENV === "production";
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  };
+
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshToken", cookieOptions);
 
   res.json({ message: "Logged out from all devices" });
 };

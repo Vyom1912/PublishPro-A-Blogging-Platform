@@ -3,12 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { RTE } from "../../components";
 import api from "../../api/axios";
 import { InputBox } from "../../components";
-import { useAuth } from "../../context/AuthContext";
 
 import "./AddBlog.css";
 function AddBlog() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [labels, setLabels] = useState([]);
@@ -20,10 +18,8 @@ function AddBlog() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Redirect guests away
-  useEffect(() => {
-    if (user === null) navigate("/login");
-  }, [user]);
+  // Auth guard is handled at the router level (ProtectedRoute).
+  // No manual redirect needed here.
 
   useEffect(() => {
     fetchLabels();

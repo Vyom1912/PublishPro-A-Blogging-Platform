@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.get("/auth/me");
       setUser(normaliseUser(res.data.user));
-    } catch (error) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -40,6 +40,25 @@ export const AuthProvider = ({ children }) => {
     } catch (_) {}
     setUser(null);
   };
+
+  // Block rendering until the session restore check is complete.
+  // This prevents protected pages from briefly flashing or redirecting
+  // to /login on a page refresh before /auth/me has responded.
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          fontSize: "1.2rem",
+          color: "#555",
+        }}>
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider

@@ -14,7 +14,8 @@ function Profile() {
   const [activeTab, setActiveTab] = useState("overview");
 
   if (!user) {
-    return <h2>Please Login</h2>;
+    // ProtectedRoute handles the redirect; this is just a safety fallback.
+    return null;
   }
 
   const handleDelete = async (id) => {
