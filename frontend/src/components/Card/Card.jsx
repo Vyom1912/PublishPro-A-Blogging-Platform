@@ -13,7 +13,7 @@ function Card({ id, title, imgSrc, description }) {
       <div className='card-info  flex'>
         <h3 className='flex'>
           <span className='card-title'> {title}</span>
-          <FontAwesomeIcon icon={faArrowRight} className='card-icone' />
+          <FontAwesomeIcon icon={faArrowRight} className='card-icone flex' />
         </h3>
 
         <div className='card-description'>

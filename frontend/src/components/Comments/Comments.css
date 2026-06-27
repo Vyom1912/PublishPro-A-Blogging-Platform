@@ -1,67 +1,130 @@
-/* comment */
+/* ═══════════════════════════════════════════════════════════════
+   COMMENTS SECTION
+═══════════════════════════════════════════════════════════════ */
 .comments-section {
-  margin: 2rem 0;
+  margin: 32px 0 16px;
 }
 
+/* ── Add comment ── */
 .add-comment-box {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .add-comment-box textarea {
   width: 100%;
-  padding: 10px;
-  outline: none;
-  border: 1px solid var(--mid-dark);
+  padding: 9px 14px;
+  border: 1.5px solid var(--mid-dark);
+  border-radius: var(--radius-md);
   color: var(--dark);
   background: var(--light);
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  outline: none;
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .add-comment-box textarea:focus {
   background: var(--bg);
-  border: 1px solid var(--dark);
+  border-color: var(--dark);
+  box-shadow: 0 0 0 3px rgba(33, 52, 72, 0.08);
 }
+
 .add-comment-box .inputBtn {
   background: var(--light);
 }
 .add-comment-box .inputBtn:hover {
-  color: var(--bg);
   background: var(--dark);
 }
 
+/* ── Comment card ── */
 .comment-card {
-  padding: 12px;
+  padding: 8px 16px;
   color: var(--dark);
-  border: 1px solid var(--mid-dark);
-  box-shadow: var(--shadow);
-  border-radius: 10px;
-  margin-bottom: 10px;
+  border: 1.5px solid rgba(84, 119, 146, 0.25);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+  margin-bottom: 12px;
   text-align: left;
+  transition: box-shadow 0.2s ease;
 }
-.comment-card p {
-  width: 100%;
-  padding: 5px 10px;
+.comment-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.comment-card .comment-author {
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--dark);
+}
+
+.comment-card .comment-body {
+  line-height: 1.6;
   overflow-wrap: break-word;
+  padding: 0;
+  color: var(--dark);
 }
+
+/* ── Edit mode ── */
 .edit-comment textarea {
   width: 100%;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--mid-dark);
   background: var(--light);
   outline: none;
+  resize: vertical;
+  min-height: 70px;
+  transition: border-color 0.2s ease;
 }
+.edit-comment textarea:focus {
+  border-color: var(--dark);
+}
+
+/* ── Action buttons ── */
 .comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 10px;
-  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .comment-actions button {
-  padding: 4px 15px;
-  border-radius: 4px;
+  padding: 3px 16px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--dark);
   cursor: pointer;
-  color: var(--bg);
+  background: var(--bg);
+  color: var(--dark);
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.comment-actions button:hover {
   background: var(--dark);
+  color: var(--bg);
+}
+/* Delete gets a subtle red */
+.comment-actions button:last-child {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+.comment-actions button:last-child:hover {
+  background: #c0392b;
+  color: var(--bg);
+  border-color: #c0392b;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .comment-card {
+    padding: 12px;
+  }
+  .add-comment-box .inputBtn {
+    align-self: stretch;
+    text-align: center;
+  }
 }

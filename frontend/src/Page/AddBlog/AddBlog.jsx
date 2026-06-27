@@ -85,83 +85,77 @@ function AddBlog() {
   };
   return (
     <div className='add-blog-container'>
-      <form onSubmit={handleSubmit} className='flex add-blog-form'>
+      <form onSubmit={handleSubmit} className='flex add-blog-form '>
+
         <div className='form-group'>
-          {/* <label htmlFor='title'>Title:</label>
+          <label htmlFor='title'>Title</label>
           <input
-            type='text'
-            placeholder='Title'
-            onChange={(e) => setTitle(e.target.value)}
-          /> */}
-        </div>
-        <InputBox
-          label='Title:'
-          type='text'
+             type='text'
           id='title'
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder='Enter title...'
-        />{" "}
-        <div className='form-group'>
-          <label htmlFor='description'>Description:</label>
+          />
+        </div>
 
+        <div className='form-group'>
+          <label htmlFor='description'>Description</label>
           <textarea
-            name=''
             id='description'
             placeholder='Enter short description...'
             rows={3}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}></textarea>
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
+
         <div className='form-group'>
-          <label htmlFor='label'>Categories:</label>
+          <label htmlFor='label'>Category</label>
           <select
+            id='label'
             name='label'
             value={label}
             onChange={(e) => setLabel(e.target.value)}>
-            <option value=''>Select a label</option>
-
+            <option value=''>Select a category</option>
             {labels.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
+              <option key={item} value={item}>{item}</option>
             ))}
           </select>
         </div>
+
         <div className='form-group'>
-          <label>Tags:</label>
+          <label>Tags</label>
           <input
             type='text'
-            placeholder='react, hooks, javascript'
+            placeholder='coding, nature, India, modi'
             value={tags}
             onChange={(e) => setTags(e.target.value)}
           />
           <small>Separate tags with commas.</small>
         </div>
+
         <div className='form-group'>
-          <label htmlFor='titleImage'>Title Image:</label>
+          <label>Cover Image</label>
           <div className='sub-form-group'>
             <input
               type='file'
-              placeholder='Title Image'
+              accept='image/*'
               onChange={handleImageChange}
             />
-            {/* <label htmlFor=''>Image Preview: </label> */}
             {titleImage && (
               <div className='image-preview'>
-                <img
-                  src={imagePreview}
-                  alt='Preview'
-                  className='w-full h-full object-cover'
-                />
+                <img src={imagePreview} alt='Preview' />
               </div>
             )}
           </div>
         </div>
+
         <RTE value={content} onChange={setContent} />
-        {error && <p style={{ color: "red" }}>{error}</p>}
+
+        {error && <p style={{ color: "#c0392b" }}>{error}</p>}
+
         <button type='submit' className='inputBtn' disabled={submitting}>
-          {submitting ? "Publishing..." : "Add Blog"}
+          {submitting ? "Publishing…" : "Publish Blog"}
         </button>
       </form>
     </div>

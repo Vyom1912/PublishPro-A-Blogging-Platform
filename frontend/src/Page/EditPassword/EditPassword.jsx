@@ -12,6 +12,7 @@ function EditPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,50 +22,60 @@ function EditPassword() {
       setError("Passwords do not match");
       return;
     }
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
 
+    setLoading(true);
     try {
-      // Calls PUT /api/users/change-password (or POST /api/auth/change-password)
-      // both are wired up. Cookie is sent automatically.
       const res = await api.put("/users/change-password", {
         currentPassword,
         newPassword,
       });
-
       alert(res.data.message);
-
-      // After a password change all sessions are invalidated on the server.
-      // Log out locally too so the UI reflects the cleared state.
       await logout();
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className='formBox edit-password flex'>
-      <h1 className='text-3xl font-bold underline'>Change Password</h1>
+    <div className="flex formBox">
+      <h1>Change Password</h1>
 
-      <form className='flex formContainer' onSubmit={handleSubmit}>
+      <form className=" flex formContainer" onSubmit={handleSubmit}>
         <InputBox
-          label='Current Password'
-          type='password'
-          id='current-password'
+          label="Current Password"
+          type="password"
+          id="current-password"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          placeholder='Enter current password...'
+          placeholder="Your current password"
         />
 
         <InputBox
-          label='New Password'
-          type='password'
-          id='new-password'
+          label="New Password"
+          type="password"
+          id="new-password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          placeholder='Enter new password...'
+          placeholder="At least 8 characters"
         />
 
-        <div className='password-info'>
+        <InputBox
+          label="Confirm Password"
+          type="password"
+          id="confirm-password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Re-enter new password"
+        />
+
+        <div className="password-info">
           <p>Password must:</p>
           <ul>
             <li>Be at least 8 characters long</li>
@@ -72,25 +83,16 @@ function EditPassword() {
             <li>Include uppercase and lowercase letters</li>
           </ul>
         </div>
-        <InputBox
-          label='Confirm Password'
-          type='password'
-          id='confirm-password'
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder='Re-enter new password...'
-        />
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>}
 
-        <button type='submit' className='inputBtn'>
-          Confirm
+        <button type="submit" className="inputBtn" disabled={loading}>
+          {loading ? "Updating…" : "Update Password"}
         </button>
       </form>
-      <label htmlFor=' ' className='forgot-link'>
-        <Link to='/forgot-password' className='text-blue-600 bold'>
-          Forgot Password?
-        </Link>
+
+      <label className="forgot-link">
+        <Link to="/forgot-password">Forgot Password?</Link>
       </label>
     </div>
   );

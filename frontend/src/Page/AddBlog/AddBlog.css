@@ -70,12 +70,6 @@
   .add-blog-container {
     width: 90%;
   }
-  .sub-form-group {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 550px) {
   .form-group {
     display: grid;
     grid-template-columns: 1fr;
@@ -84,4 +78,10 @@
     width: 150px;
     height: 150px;
   }
+  .sub-form-group {
+    grid-template-columns: 1fr;
+  }
 }
+
+/* @media (max-width: 550px) {
+} */

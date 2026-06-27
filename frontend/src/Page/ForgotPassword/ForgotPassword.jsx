@@ -1,42 +1,48 @@
 import { useState } from "react";
 import api from "../../api/axios";
-import "./ForgotPassword.css";
 import { InputBox } from "../../components";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("clicked");
+    setLoading(true);
     try {
-      const res = await api.post("/auth/forgot-password", {
-        email,
-      });
-
-      alert(res.data.message);
+      const res = await api.post("/auth/forgot-password", { email });
+      setMessage(res.data.message);
     } catch (error) {
-      console.log(error);
+      setMessage("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className='formBox edit-password flex'>
-      <h1 className='text-3xl font-bold underline'>
-        Send Request to Email for Reset Password
-      </h1>
+    <div className="flex formBox">
+      <h1>Reset your password</h1>
+      <p style={{ color: "var(--mid-dark)", textAlign: "left", width: "100%" }}>
+        Enter your email and we&apos;ll send you a reset link.
+      </p>
 
-      <form onSubmit={handleSubmit} className='flex formContainer'>
+      <form className="flex formContainer" onSubmit={handleSubmit}>
         <InputBox
-          label='Enter Email'
-          type='text'
-          // id='email'
+          label="Email"
+          type="email"
+          id="forgot-email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder='Enter Email...'
+          placeholder="you@example.com"
         />
-        <button type='submit' className='inputBtn'>
-          Send Reset Link
+
+        {message && (
+          <p style={{ color: "var(--mid-dark)", textAlign: "left" }}>{message}</p>
+        )}
+
+        <button type="submit" className="inputBtn" disabled={loading}>
+          {loading ? "Sending…" : "Send Reset Link"}
         </button>
       </form>
     </div>
