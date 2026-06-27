@@ -8,8 +8,8 @@ function RTE({ value, onChange }) {
       // tinymceScriptSrc tells the wrapper to load TinyMCE from this URL
       // instead of the cloud, so the "domain not registered" error goes away.
       tinymceScriptSrc="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.9.1/tinymce.min.js"
-      licenseKey="gpl"
-      //  apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+      // licenseKey="gpl"
+       apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
       value={value}
       init={{
         content_css: "./RTX.css",
