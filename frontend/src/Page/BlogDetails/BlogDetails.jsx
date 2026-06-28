@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { BackButton, Comments } from "../../components";
 import { useAuth } from "../../context/AuthContext";
+import DOMPurify from "dompurify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookmark as farBookmark,
@@ -177,7 +178,7 @@ function BlogDetails() {
             <p className='blog-detail-item'>Views: {countView}</p>
             <div className='blog-details-box flex'>
               <p className='blog-detail-item'>label: {blog.label}</p>
-              <div className='blog-detail-item'>
+              <div className='blog-detail-item blog-di-tags flex'>
                 {blog.tags?.map((tag) => (
                   <span key={tag} className='tag  '>
                     #{tag}
@@ -191,7 +192,12 @@ function BlogDetails() {
       </div>
 
       <div className='blog-content'>
-        <div dangerouslySetInnerHTML={{ __html: blog.content }}></div>
+        {/* <div dangerouslySetInnerHTML={{ __html: blog.content }}></div> */}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(blog.content),
+          }}
+        />
       </div>
       <Comments />
       <BackButton />

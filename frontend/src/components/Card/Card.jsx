@@ -20,6 +20,9 @@ function Card({ id, title, imgSrc, description }) {
           <p className='description-content'>{description || " "}</p>
         </div>
       </div>
+      <div className='card-description card-descri-sm'>
+        <p className='description-content'>{description || " "}</p>
+      </div>
     </div>
     // </Link>
   );

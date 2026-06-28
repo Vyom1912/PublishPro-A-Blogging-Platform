@@ -8,11 +8,16 @@
   overflow: hidden;
   margin: 20px 0;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
 }
-
+.tox.tox-tinymce:focus-within {
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  border-color: #2563eb !important;
+}
 /* Toolbar */
 .tox .tox-toolbar,
 .tox .tox-toolbar__primary {
+  padding: 6px;
   background: #f8fafc !important;
   border-bottom: 1px solid #e5e7eb !important;
 }
@@ -20,6 +25,7 @@
 /* Toolbar buttons */
 .tox .tox-tbtn {
   border-radius: 6px !important;
+  transition: 0.2s;
 }
 
 /* Hover effect */
@@ -30,4 +36,7 @@
 /* Status bar */
 .tox .tox-statusbar {
   background: #f8fafc !important;
+}
+.tox-edit-area iframe {
+  background: #ffffff;
 }
