@@ -1,7 +1,7 @@
 import { useState } from "react";
 import api from "../../api/axios";
-import { InputBox } from "../../components";
-
+import { BackButton, InputBox } from "../../components";
+import "./ForgotPassword.css";
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -21,30 +21,33 @@ function ForgotPassword() {
   };
 
   return (
-    <div className="flex formBox">
+    <div className='flex formBox forgot-password-box'>
       <h1>Reset your password</h1>
       <p style={{ color: "var(--mid-dark)", textAlign: "left", width: "100%" }}>
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
-      <form className="flex formContainer" onSubmit={handleSubmit}>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
         <InputBox
-          label="Email"
-          type="email"
-          id="forgot-email"
+          label='Email'
+          type='email'
+          id='forgot-email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          placeholder='you@example.com'
         />
 
         {message && (
-          <p style={{ color: "var(--mid-dark)", textAlign: "left" }}>{message}</p>
+          <p style={{ color: "var(--mid-dark)", textAlign: "left" }}>
+            {message}
+          </p>
         )}
 
-        <button type="submit" className="inputBtn" disabled={loading}>
+        <button type='submit' className='inputBtn' disabled={loading}>
           {loading ? "Sending…" : "Send Reset Link"}
         </button>
       </form>
+      <BackButton/>
     </div>
   );
 }

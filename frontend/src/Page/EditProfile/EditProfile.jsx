@@ -106,23 +106,18 @@ function EditProfile() {
             })
           }
         />
-
-        <div className='form-group'>
-          <label htmlFor='about'>About:</label>
-
-          <textarea
-            id='about'
-            rows='5'
-            value={formData.about}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                about: e.target.value,
-              })
-            }
-          />
-        </div>
-
+        <InputBox
+          label='About'
+          rows='5'
+          id='about'
+          value={formData.about}
+          onChange={(e) =>
+            setFormData({
+              ...formData,
+              about: e.target.value,
+            })
+          }
+        />
         <button type='submit' className='inputBtn'>
           Update Profile
         </button>

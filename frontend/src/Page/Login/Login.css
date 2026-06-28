@@ -1,3 +1,6 @@
+.login{
+  margin: 40px auto;
+}
 /* ── Login page extra spacing handled by global .formBox ── */
 .login-footer {
   width: 100%;

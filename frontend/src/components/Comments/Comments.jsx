@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { useParams } from "react-router-dom";
+import InputBox from "../InputBox/InputBox";
 import "./Comments.css";
 
 function Comments() {
@@ -72,11 +73,12 @@ function Comments() {
     <div className='comments-section'>
       <div className='add-comment-box'>
         <h3 className='lableTitle'>Add Comment</h3>
-        <textarea
+        <InputBox
+          id='comment'
+          rows={4}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder='Write your comment...'
-          rows='4'
         />
         <button onClick={submitComment} className='inputBtn'>
           Post Comment
@@ -96,7 +98,9 @@ function Comments() {
 
             {editingId === c._id ? (
               <div className='edit-comment'>
-                <textarea
+                <InputBox
+                  id={`edit-comment-${c._id}`}
+                  rows={3}
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
                 />

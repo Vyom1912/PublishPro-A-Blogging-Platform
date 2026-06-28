@@ -151,6 +151,24 @@ export const updateBlog = async (req, res) => {
     blog.title = title || blog.title;
     blog.description = description || blog.description;
     blog.label = label || blog.label;
+
+    // Tags may arrive as a JSON-stringified array (e.g. '["a","b"]') or
+    // as a plain comma-separated string — handle both gracefully.
+    if (tags !== undefined && tags !== null) {
+      let parsedTags;
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch {
+        parsedTags = tags
+          .split(",")
+          .map((t) => t.trim().toLowerCase())
+          .filter(Boolean);
+      }
+      blog.tags = Array.isArray(parsedTags)
+        ? parsedTags.map((t) => t.trim().toLowerCase()).filter(Boolean)
+        : blog.tags;
+    }
+
     blog.content = content || blog.content;
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
@@ -261,7 +279,10 @@ export const getAutherInfo = async (req, res) => {
 
     const totalLikes = blogs.reduce((sum, b) => sum + b.likes.length, 0);
     const totalViews = blogs.reduce((sum, b) => sum + b.views, 0);
-    const totalSaves = blogs.reduce((sum, b) => sum + (b.savedBy?.length || 0), 0);
+    const totalSaves = blogs.reduce(
+      (sum, b) => sum + (b.savedBy?.length || 0),
+      0,
+    );
 
     res.json({
       success: true,
@@ -361,12 +382,48 @@ export const getLabels = async (req, res) => {
   try {
     // const labels = await Label.find();
     const labels = [
-      "Technology",
-      "Programming",
-      "Travel",
+      "Anime",
+      "Art & Design",
+      "Automotive",
+      "Beauty",
+      "Books",
+      "Business",
+      "Career",
+      "Cloud Computing",
+      "Cryptocurrency",
+      "Cybersecurity",
+      "Data Science",
+      "DevOps",
+      "Education",
+      "Entertainment",
+      "Fashion",
+      "Finance",
+      "Fitness",
       "Food",
+      "Gaming",
+      "Health",
+      "History",
+      "Home & Garden",
       "Lifestyle",
+      "Mental Health",
+      "Mobile Development",
+      "Movies",
+      "Music",
+      "Nature",
+      "News",
+      "Open Source",
+      "Personal Finance",
+      "Pets",
+      "Photography",
+      "Politics",
+      "Programming",
+      "Science",
+      "Software Engineering",
       "Sports",
+      "Technology",
+      "Travel",
+      "TV Shows",
+      "Web Development",
     ];
 
     res.status(200).json(labels);

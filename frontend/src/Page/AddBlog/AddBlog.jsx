@@ -66,7 +66,7 @@ function AddBlog() {
 
     try {
       setSubmitting(true);
-      await api.post("/blogs", formData);
+      const res = await api.post("/blogs", formData);
 
       setTitle("");
       setLabel("");
@@ -75,7 +75,7 @@ function AddBlog() {
       setImagePreview("");
       setDescription("");
       setContent("");
-      navigate("/");
+      navigate(`/blog/${res.data.blog._id}`);
     } catch (error) {
       setError(error.response?.data?.message || "Failed to create blog");
       console.error(error);
@@ -85,20 +85,35 @@ function AddBlog() {
   };
   return (
     <div className='add-blog-container'>
-      <form onSubmit={handleSubmit} className='flex add-blog-form '>
-
-        <div className='form-group'>
-          <label htmlFor='title'>Title</label>
-          <input
-             type='text'
+      <form onSubmit={handleSubmit} className='flex add-blog-form formContainer '>
+        <InputBox
+          label='Title'
+          type='text'
           id='title'
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder='Enter title...'
+        />
+        {/* <div className='form-group'>
+          <label htmlFor='title'>Title</label>
+          <input
+            type='text'
+            id='title'
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder='Enter title...'
           />
-        </div>
+        </div> */}
 
-        <div className='form-group'>
+        <InputBox
+          label='Description'
+          id='description'
+          placeholder='Enter short description...'
+          rows='3'
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        {/* <div className='form-group'>
           <label htmlFor='description'>Description</label>
           <textarea
             id='description'
@@ -107,7 +122,7 @@ function AddBlog() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-        </div>
+        </div> */}
 
         <div className='form-group'>
           <label htmlFor='label'>Category</label>
@@ -118,14 +133,18 @@ function AddBlog() {
             onChange={(e) => setLabel(e.target.value)}>
             <option value=''>Select a category</option>
             {labels.map((item) => (
-              <option key={item} value={item}>{item}</option>
+              <option key={item} value={item}>
+                {item}
+              </option>
             ))}
           </select>
         </div>
 
         <div className='form-group'>
-          <label>Tags</label>
-          <input
+          {/* <label>Tags</label> */}
+          <InputBox
+          label='Tags'
+            id='tags'
             type='text'
             placeholder='coding, nature, India, modi'
             value={tags}
@@ -137,11 +156,7 @@ function AddBlog() {
         <div className='form-group'>
           <label>Cover Image</label>
           <div className='sub-form-group'>
-            <input
-              type='file'
-              accept='image/*'
-              onChange={handleImageChange}
-            />
+            <input type='file' accept='image/*' onChange={handleImageChange} />
             {titleImage && (
               <div className='image-preview'>
                 <img src={imagePreview} alt='Preview' />

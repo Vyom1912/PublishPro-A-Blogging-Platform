@@ -41,7 +41,7 @@ function ProfileSlider({ user, activeTab, setActiveTab, logout }) {
       </div>
 
       <div className={`user-info-links flex ${menuOpen ? "links-open" : ""}`}>
-        <button className='inputBtn' onClick={() => handleTab("overview")}>
+        <button className={`inputBtn ${activeTab === "overview" ? "inputBtnActive" : ""}`} onClick={() => handleTab("overview")}>
           Overview
         </button>
         <button className='inputBtn'>
@@ -49,16 +49,16 @@ function ProfileSlider({ user, activeTab, setActiveTab, logout }) {
             + Add Blog
           </Link>
         </button>
-        <button className='inputBtn' onClick={() => handleTab("myBlogs")}>
+        <button className={`inputBtn ${activeTab === "myBlogs" ? "inputBtnActive" : ""}`} onClick={() => handleTab("myBlogs")}>
           My Blogs
         </button>
-        <button className='inputBtn' onClick={() => handleTab("savedBlogs")}>
+        <button className={`inputBtn ${activeTab === "savedBlogs" ? "inputBtnActive" : ""}`} onClick={() => handleTab("savedBlogs")}>
           Saved Blogs
         </button>
-        <button className='inputBtn' onClick={() => handleTab("editProfile")}>
+        <button className={`inputBtn ${activeTab === "editProfile" ? "inputBtnActive" : ""}`} onClick={() => handleTab("editProfile")}>
           Edit Profile
         </button>
-        <button className='inputBtn' onClick={() => handleTab("editPassword")}>
+        <button className={`inputBtn ${activeTab === "editPassword" ? "inputBtnActive" : ""}`} onClick={() => handleTab("editPassword")}>
           Edit Password
         </button>
         <button className='inputBtn' onClick={handleLogout}>

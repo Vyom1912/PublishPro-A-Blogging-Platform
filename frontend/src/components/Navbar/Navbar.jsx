@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Searchbox from "../Searchbox/Searchbox";
 import { useAuth } from "../../context/AuthContext";
 
@@ -11,40 +11,40 @@ function Navbar() {
     <nav className='nav-box flex'>
       <div className='navbar flex'>
         <div className='logo'>
-          <Link to='/'>PublishPro</Link>
+          <NavLink to='/'>PublishPro</NavLink>
         </div>
 
         <div className='nav-link-box flex'>
-          <Link to='/' className='navlink'>
+          <NavLink to='/' end className={({ isActive }) => `navlink${isActive ? " navlink-active" : ""}`}>
             Home
-          </Link>
+          </NavLink>
 
-          {/* <Link to='/dashboard' className='navlink'>
+          {/* <NavLink to='/dashboard' className={({ isActive }) => `navlink${isActive ? " navlink-active" : ""}`}>
             Dashboar
-          </Link> */}
+          </NavLink> */}
           {user && (
-            <Link to='/add-blog' className='navlink'>
+            <NavLink to='/add-blog' className={({ isActive }) => `navlink${isActive ? " navlink-active" : ""}`}>
               Add Blog
-            </Link>
+            </NavLink>
           )}
 
           <Searchbox />
 
           {!user ? (
             <>
-              <Link to='/login' className='navlink'>
+              <NavLink to='/login' className={({ isActive }) => `navlink${isActive ? " navlink-active" : ""}`}>
                 Login
-              </Link>
+              </NavLink>
 
-              <Link to='/signup' className='navlink signup-btn'>
+              <NavLink to='/signup' className={({ isActive }) => `navlink signup-btn${isActive ? " navlink-active" : ""}`}>
                 Sign Up
-              </Link>
+              </NavLink>
             </>
           ) : (
             <>
-              <Link to='/profile' className='navlink'>
+              <NavLink to='/profile' className={({ isActive }) => `navlink${isActive ? " navlink-active" : ""}`}>
                 Profile
-              </Link>
+              </NavLink>
             </>
           )}
         </div>

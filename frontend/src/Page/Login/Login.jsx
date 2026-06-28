@@ -29,7 +29,7 @@ function Login() {
   };
 
   return (
-    <div className="flex formBox">
+    <div className="flex formBox login">
       <h1>Welcome back</h1>
 
       <form className=" flex formContainer" onSubmit={handleSubmit}>

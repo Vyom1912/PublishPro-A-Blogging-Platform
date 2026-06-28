@@ -29,7 +29,7 @@ function SignUp() {
   };
 
   return (
-    <div className="flex formBox">
+    <div className="flex formBox login">
       <h1>Create an account</h1>
 
       <form className="flex formContainer" onSubmit={handleSubmit}>

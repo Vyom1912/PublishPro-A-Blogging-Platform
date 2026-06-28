@@ -2,8 +2,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
-import { InputBox } from "../../components";
-
+import { BackButton, InputBox } from "../../components";
+import "./ResetPassword.css";
 function ResetPassword() {
   const { setUser } = useAuth();
   const { token } = useParams();
@@ -23,7 +23,9 @@ function ResetPassword() {
     }
     setLoading(true);
     try {
-      const { data } = await api.post(`/auth/reset-password/${token}`, { password });
+      const { data } = await api.post(`/auth/reset-password/${token}`, {
+        password,
+      });
       setMessage(data.message);
       setUser(null);
       setTimeout(() => navigate("/login"), 1500);
@@ -35,34 +37,39 @@ function ResetPassword() {
   };
 
   return (
-    <div className="flex formBox">
+    <div className='flex formBox forgot-password-box'>
       <h1>Set new password</h1>
 
-      <form className="flex formContainer" onSubmit={handleSubmit}>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
         <InputBox
-          label="New Password"
-          type="password"
-          id="reset-password"
+          label='New Password'
+          type='password'
+          id='reset-password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter new password"
+          placeholder='Enter new password'
         />
         <InputBox
-          label="Confirm Password"
-          type="password"
-          id="reset-confirm"
+          label='Confirm Password'
+          type='password'
+          id='reset-confirm'
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
-          placeholder="Re-enter new password"
+          placeholder='Re-enter new password'
         />
 
-        {error && <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>}
-        {message && <p style={{ color: "green", textAlign: "left" }}>{message}</p>}
+        {error && (
+          <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>
+        )}
+        {message && (
+          <p style={{ color: "green", textAlign: "left" }}>{message}</p>
+        )}
 
-        <button type="submit" className="inputBtn" disabled={loading}>
+        <button type='submit' className='inputBtn' disabled={loading}>
           {loading ? "Saving…" : "Reset Password"}
         </button>
       </form>
+      <BackButton />
     </div>
   );
 }

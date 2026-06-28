@@ -52,6 +52,14 @@
   width: 100%;
   left: 0;
 }
+.navlink-active::before {
+  width: 100%;
+  left: 0;
+  background-color: var(--bg);
+}
+.navlink-active {
+  color: var(--bg);
+}
 @media (max-width: 1024px) {
   .navlink {
     font-size: 0.98rem;
@@ -86,6 +94,12 @@
     color: var(--dark);
   }
   .navlink::before {
+    background: var(--dark);
+  }
+  .navlink-active {
+    color: var(--dark);
+  }
+  .navlink-active::before {
     background: var(--dark);
   }
 }
