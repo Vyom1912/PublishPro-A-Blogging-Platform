@@ -208,31 +208,31 @@ export const searchBlogs = async (req, res) => {
   try {
     const { query } = req.query;
 
-    // const blogs = await Blog.find({
-    //   title: {
-    //     $regex: query,
-    //     $options: "i",
-    //   },
-    // }).populate("author", "name");
+    if (!query || !query.trim()) {
+      return res.json({ success: true, blogs: [] });
+    }
+
+    const regex = { $regex: query.trim(), $options: "i" };
+
+    // Author is a ref, so we resolve matching user IDs first,
+    // then include them as a separate $or condition.
+    const matchingAuthors = await User.find({ name: regex }).select("_id");
+    const authorIds = matchingAuthors.map((u) => u._id);
+
     const blogs = await Blog.find({
       $or: [
-        {
-          title: {
-            $regex: query,
-            $options: "i",
-          },
-        },
-        {
-          tags: {
-            $regex: query,
-            $options: "i",
-          },
-        },
+        { title: regex },
+        { tags: regex },
+        { label: regex },
+        ...(authorIds.length ? [{ author: { $in: authorIds } }] : []),
       ],
-    }).populate("author", "name");
+    })
+      .populate("author", "name email")
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
+      count: blogs.length,
       blogs,
     });
   } catch (error) {

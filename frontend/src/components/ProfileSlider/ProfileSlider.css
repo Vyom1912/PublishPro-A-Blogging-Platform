@@ -132,6 +132,11 @@
   font-weight: 600;
 }
 
+.profile .card-container {
+    
+    grid-template-columns: repeat(1, 1fr);
+    
+}
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE — tablet (sidebar shrinks)
 ═══════════════════════════════════════════════════════════════ */

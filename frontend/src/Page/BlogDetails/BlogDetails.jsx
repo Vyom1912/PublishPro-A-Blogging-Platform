@@ -136,7 +136,10 @@ function BlogDetails() {
 
   return (
     <div className='blog-container'>
-      <h1 className='blog-title'>{blog.title}</h1>
+      <h1 className='blog-title'>
+        {blog.title}
+        <BackButton />
+      </h1>
       <div className='flex blog-title-details'>
         <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
         <div className='blog-details flex'>
@@ -200,7 +203,9 @@ function BlogDetails() {
         />
       </div>
       <Comments />
-      <BackButton />
+      <div className='blog-backBtn'>
+        <BackButton />
+      </div>
     </div>
   );
 }

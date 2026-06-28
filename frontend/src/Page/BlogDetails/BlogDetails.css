@@ -10,12 +10,14 @@
 .blog-title {
   font-size: clamp(1.4rem, 3.5vw, 2.2rem);
   font-weight: 700;
+  height: fit-content;
   color: var(--dark);
   text-transform: capitalize;
   text-decoration: underline;
   text-underline-offset: 4px;
   margin-bottom: 22px;
   line-height: 1.25;
+  position: relative;
 }
 
 /* ── Hero area: image + meta ── */
