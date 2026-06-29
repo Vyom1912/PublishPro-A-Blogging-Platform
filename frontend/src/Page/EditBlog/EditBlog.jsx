@@ -4,6 +4,7 @@ import { BackButton, InputBox } from "../../components";
 import { useState, useEffect } from "react";
 import RTE from "../../components/RTE/RTE";
 import api from "../../api/axios";
+import "./EditBlog.css";
 function EditBlog() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -96,20 +97,22 @@ function EditBlog() {
 
   return (
     <div>
-      
       <div className='add-blog-container'>
         <h1
-        style={{
-          width:"100%",
-          margin: "20px auto",
-          fontWeight: "700",
-          color: "var(--dark)",
-          position:"relative"
-        }}>
-        Edit Blog
-        <BackButton />
-      </h1> 
-        <form onSubmit={handleSubmit} className='flex add-blog-form formContainer'>
+          className='blog-title'
+          style={{
+            width: "100%",
+            margin: "20px auto",
+            fontWeight: "700",
+            color: "var(--dark)",
+            position: "relative",
+          }}>
+          Edit Blog
+          <BackButton />
+        </h1>
+        <form
+          onSubmit={handleSubmit}
+          className='flex add-blog-form formContainer'>
           {/* <InputBox /> */}
           <InputBox
             label='Title'
@@ -147,7 +150,7 @@ function EditBlog() {
           <div className='form-group'>
             {/* <label>Tags</label> */}
             <InputBox
-            label="Tags"
+              label='Tags'
               id='tags'
               type='text'
               placeholder='coding, nature, India, modi'
@@ -192,16 +195,16 @@ function EditBlog() {
             {submitting ? "Updating..." : "Update Blog"}
           </button>
         </form>
+        <BackButton />
       </div>
-      <div className='blog-container'>
-        {/* <h1 className='blog-title'>{blog.title}</h1>
+      {/* <div className='blog-container'> */}
+      {/* <h1 className='blog-title'>{blog.title}</h1>
         <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
         <p className='blog-auther'>Author: {blog.author?.name}</p>
         <div
           className='blog-content'
           dangerouslySetInnerHTML={{ __html: blog.content }}></div> */}
-        <BackButton />
-      </div>
+      {/* </div> */}
     </div>
   );
 }

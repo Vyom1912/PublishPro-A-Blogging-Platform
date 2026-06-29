@@ -17,6 +17,13 @@
   text-underline-offset: 4px;
   margin-bottom: 22px;
   line-height: 1.25;
+  /* display: inline; */
+  /* position: relative; */
+}
+
+.blog-title .back-btn {
+  float: right;
+  margin: 10px 0;
   position: relative;
 }
 
@@ -181,6 +188,7 @@
   padding-left: 1rem;
   color: gray;
 }
+
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════════════ */
@@ -193,7 +201,11 @@
     height: 170px;
   }
 }
-
+@media (max-width: 786px) {
+  .blog-title .back-btn {
+    display: none;
+  }
+}
 @media (max-width: 640px) {
   .blog-container {
     width: 95%;
