@@ -188,7 +188,9 @@
   padding-left: 1rem;
   color: gray;
 }
-
+.blog-backBtn .back-btn {
+  display: none;
+}
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════════════════════════════ */
@@ -204,6 +206,9 @@
 @media (max-width: 786px) {
   .blog-title .back-btn {
     display: none;
+  }
+  .blog-backBtn .back-btn {
+    display: block;
   }
 }
 @media (max-width: 640px) {
