@@ -30,7 +30,6 @@ const blogSchema = new mongoose.Schema(
     },
     featuredImage: {
       type: String,
-      imageUrl: String,
       default: "",
     },
     author: {
@@ -63,6 +62,11 @@ const blogSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// Home page sorts by newest; profile / author pages filter by author.
+blogSchema.index({ createdAt: -1 });
+blogSchema.index({ author: 1, createdAt: -1 });
+
 const Blog = mongoose.model("Blog", blogSchema);
 
 export default Blog;

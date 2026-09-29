@@ -2,16 +2,15 @@
    BACK BUTTON
 ═══════════════════════════════════════════════════════════════ */
 .back-btn {
+  flex-shrink: 0;
   width: fit-content;
   height: fit-content;
-  padding: 7px 18px;
+  min-height: 38px;
+  padding: 6px 16px;
   color: var(--bg);
   border: 1.5px solid var(--dark);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  position: absolute;
-  top: 0;
-  right: 0;
   font-weight: 600;
   background: var(--dark);
   transition:
@@ -25,10 +24,17 @@
   transform: translateY(-1px);
 }
 
-@media (max-width: 786px) {
-  .back-btn {
-    position: static;
-    display: block;
-    margin: 20px auto 0;
-  }
+/* Title on the left, back button on the right — used by detail/edit pages */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+.page-header h1 {
+  min-width: 0;
+  color: var(--dark);
+  overflow-wrap: anywhere;
 }

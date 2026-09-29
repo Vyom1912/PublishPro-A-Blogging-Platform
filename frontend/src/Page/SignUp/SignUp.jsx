@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import InputBox from "../../components/InputBox/InputBox";
+import "../Login/Login.css";
+
+const MIN_PASSWORD_LENGTH = 8;
 
 function SignUp() {
   const { setUser } = useAuth();
@@ -12,15 +15,24 @@ function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await api.post("/auth/register", { name, email, password });
       setUser(res.data.user);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
@@ -29,49 +41,54 @@ function SignUp() {
   };
 
   return (
-    <div className="flex formBox login">
+    <div className='flex formBox login'>
       <h1>Create an account</h1>
 
-      <form className="flex formContainer" onSubmit={handleSubmit}>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
         <InputBox
-          label="Name"
-          type="text"
-          id="signup-name"
+          label='Name'
+          id='signup-name'
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Your full name"
+          placeholder='Your full name'
+          autoComplete='name'
+          required
         />
 
         <InputBox
-          label="Email"
-          type="email"
-          id="signup-email"
+          label='Email'
+          type='email'
+          id='signup-email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          placeholder='you@example.com'
+          autoComplete='email'
+          inputMode='email'
+          required
         />
 
         <InputBox
-          label="Password"
-          type="password"
-          id="signup-password"
+          label='Password'
+          type='password'
+          id='signup-password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Choose a strong password"
+          placeholder='Choose a strong password'
+          autoComplete='new-password'
+          required
         />
+        <p className='field-hint'>At least {MIN_PASSWORD_LENGTH} characters.</p>
 
-        {error && <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>}
+        {error && <p className='error-text'>{error}</p>}
 
-        <button type="submit" className="inputBtn" disabled={loading}>
+        <button type='submit' className='inputBtn' disabled={loading}>
           {loading ? "Creating account…" : "Sign Up"}
         </button>
       </form>
 
-      <p style={{ fontSize: "0.92rem", color: "var(--mid-dark)" }}>
+      <p className='login-footer'>
         Already have an account?{" "}
-        <Link
-          to="/login"
-          style={{ color: "var(--dark)", fontWeight: 600, textDecoration: "underline" }}>
+        <Link to='/login' state={location.state}>
           Login
         </Link>
       </p>

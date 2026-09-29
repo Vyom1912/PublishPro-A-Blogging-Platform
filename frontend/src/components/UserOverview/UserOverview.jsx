@@ -1,8 +1,17 @@
 import { useState, useRef } from "react";
-import { BackButton, BlogCardList } from "../index.js";
+import BackButton from "../BackButton/BackButton";
+import BlogCardList from "../BlogCardList/BlogCardList";
+import { thumbUrl } from "../../utils/image";
 import "./UserOverview.css";
 
-function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
+function UserOverview({
+  author,
+  stats,
+  blogs = [],
+  isOwner,
+  loading = false,
+  onViewAll,
+}) {
   const [showAll, setShowAll] = useState(false);
   const blogsRef = useRef(null);
 
@@ -10,33 +19,37 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
   const aboutText = author.about || "";
 
   const handleViewAll = () => {
+    // On the profile page this switches to the "My Blogs" tab
+    if (onViewAll) return onViewAll();
+
     setShowAll(true);
-    // Call the parent's onViewAll if provided (e.g. profile tab switch)
-    onViewAll?.();
     // Scroll the blogs section into view smoothly
     setTimeout(() => {
       blogsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 50);
   };
 
+  const statItems = [
+    { label: "Blogs", value: stats.totalBlogs },
+    { label: "Likes", value: stats.totalLikes },
+    { label: "Views", value: stats.totalViews },
+    { label: "Saves", value: stats.totalSaves },
+  ];
+
   return (
-    <div className='user-overview flex'>
-      {/* Header */}
-      <div className='uo-header flex'>
-        <div className='uo-avatar-wrap'>
-          {!isOwner &&
-            (author.image ? (
-              <img src={author.image} alt={author.name} className='uo-avatar' />
-            ) : (
-              <div className='uo-avatar-placeholder flex'>
-                {author.name?.charAt(0).toUpperCase()}
-              </div>
-            ))}
-        </div>
-        {!isOwner && (
-          <div className='uo-identity flex'>
-            <h2 className='uo-name'>{author.name}</h2>
-            <p className='uo-info'>{author.email}</p>
+    <div className='user-overview'>
+      {/* Header — the profile page already shows the owner in the sidebar */}
+      {!isOwner && (
+        <div className='uo-header flex'>
+          {author.image ? (
+            <img src={thumbUrl(author.image, 200)} alt={author.name} className='uo-avatar' />
+          ) : (
+            <div className='uo-avatar-placeholder flex'>
+              {author.name?.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className='uo-identity'>
+            <h1 className='uo-name'>{author.name}</h1>
             {author.createdAt && (
               <p className='uo-info'>
                 Joined{" "}
@@ -47,67 +60,56 @@ function UserOverview({ author, stats, blogs = [], isOwner, onViewAll }) {
               </p>
             )}
           </div>
-        )}
-      </div>
-
-      {/* About */}
-      {aboutText && (
-        <div className='uo-item uo-bg flex'>
-          <label className='lableTitle'>About</label>
-          <p className='uo-text'>{aboutText}</p>
+          <BackButton className='uo-back' />
         </div>
       )}
 
       {/* Stats */}
-      {isOwner && (
-        <div className='uo-stats flex'>
-          <div className='uo-stat-item flex'>
-            <span className='uo-stat-value'>{stats.totalBlogs}</span>
-            <span className='uo-stat-label'>Blogs</span>
+      <div className='uo-stats'>
+        {statItems.map((item) => (
+          <div key={item.label} className='uo-stat-item flex'>
+            <span className='uo-stat-value'>{loading ? "–" : item.value}</span>
+            <span className='uo-stat-label'>{item.label}</span>
           </div>
-          <div className='uo-stat-item flex'>
-            <span className='uo-stat-value'>{stats.totalLikes}</span>
-            <span className='uo-stat-label'>Likes</span>
-          </div>
-          <div className='uo-stat-item flex'>
-            <span className='uo-stat-value'>{stats.totalViews}</span>
-            <span className='uo-stat-label'>Views</span>
-          </div>
-          <div className='uo-stat-item flex'>
-            <span className='uo-stat-value'>{stats.totalSaves}</span>
-            <span className='uo-stat-label'>Saves</span>
-          </div>
+        ))}
+      </div>
+
+      {/* About */}
+      {aboutText && (
+        <div className='uo-item uo-bg'>
+          <h2 className='lableTitle'>About</h2>
+          <p className='uo-text'>{aboutText}</p>
         </div>
       )}
 
       {/* Blogs section */}
-      {displayedBlogs.length > 0 && (
-        <div className='uo-item flex' ref={blogsRef}>
-          <h3 className='lableTitle'>
-            {showAll ? `All Blogs (${blogs.length})` : "Latest Blogs"}
-          </h3>
-          <BlogCardList blogs={displayedBlogs} showActions={false} />
-          {!showAll && blogs.length > 3 && (
-            <button className='inputBtn' onClick={handleViewAll}>
-              View All {blogs.length} Blogs →
-            </button>
-          )}
-          {showAll && blogs.length > 3 && (
-            <button
-              className='inputBtn'
-              onClick={() => {
-                setShowAll(false);
-                blogsRef.current?.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              }}>
-              Show Less ↑
-            </button>
-          )}
-        </div>
-      )}
-      {!isOwner && <BackButton />}
+      <div className='uo-item' ref={blogsRef}>
+        <BlogCardList
+          blogs={displayedBlogs}
+          label={showAll ? `All Blogs (${blogs.length})` : "Latest Blogs"}
+          loading={loading}
+          emptyText={isOwner ? "You haven't published anything yet." : "No blogs published yet."}
+          emptyAction={isOwner ? { to: "/add-blog", label: "Write your first blog" } : undefined}
+        />
+        {!showAll && blogs.length > 3 && (
+          <button className='inputBtn uo-more' onClick={handleViewAll}>
+            View all {blogs.length} blogs →
+          </button>
+        )}
+        {showAll && blogs.length > 3 && (
+          <button
+            className='inputBtn uo-more'
+            onClick={() => {
+              setShowAll(false);
+              blogsRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}>
+            Show less ↑
+          </button>
+        )}
+      </div>
     </div>
   );
 }

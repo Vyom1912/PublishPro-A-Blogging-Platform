@@ -1,210 +1,85 @@
-// import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { BackButton, InputBox } from "../../components";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import RTE from "../../components/RTE/RTE";
 import api from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
+import BlogForm from "../../components/BlogForm/BlogForm";
+import BackButton from "../../components/BackButton/BackButton";
 import "./EditBlog.css";
+
 function EditBlog() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { user } = useAuth();
   const [blog, setBlog] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [labels, setLabels] = useState([]);
-  const [label, setLabel] = useState("");
-  const [tags, setTags] = useState("");
-  const [content, setContent] = useState("");
-  const [titleImage, setTitleImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState("");
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
   useEffect(() => {
-    fetchLabels();
-    fetchBlog();
+    let ignore = false;
+
+    api
+      .get(`/blogs/${id}`)
+      .then((res) => !ignore && setBlog(res.data))
+      .catch((err) => {
+        if (ignore) return;
+        setError(
+          err.response?.status === 404
+            ? "This blog doesn't exist anymore."
+            : "Couldn't load this blog. Please try again.",
+        );
+      });
+
+    return () => {
+      ignore = true;
+    };
   }, [id]);
 
-  const fetchLabels = async () => {
-    try {
-      const res = await api.get("/blogs/labels");
-      setLabels(res.data);
-      // console.log(res.data);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleUpdate = async (formData) => {
+    await api.put(`/blogs/${id}`, formData);
+    navigate(`/blog/${id}`);
   };
 
-  const fetchBlog = async () => {
-    try {
-      const res = await api.get(`/blogs/${id}`);
+  if (error) {
+    return (
+      <div className='containerBox status-page'>
+        <h1>Can&apos;t edit this blog</h1>
+        <p>{error}</p>
+        <Link to='/profile' className='inputBtn'>
+          Back to profile
+        </Link>
+      </div>
+    );
+  }
 
-      setBlog(res.data);
-      setTitle(res.data.title);
-      setDescription(res.data.description);
-      setLabel(res.data.label);
-      // setLabels(res.data.labels);
-      // setTags(res.data.tags);
-      setTags(res.data.tags.join(", "));
-      setContent(res.data.content);
-      setImagePreview(res.data.featuredImage);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setTitleImage(file);
-    setImagePreview(URL.createObjectURL(file));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // console.log("Submit clicked");
-    try {
-      setSubmitting(true);
-      setError("");
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("label", label);
-
-      // Split on commas with optional surrounding spaces
-      const tagsArray = tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean);
-      formData.append("tags", JSON.stringify(tagsArray));
-
-      formData.append("content", content);
-
-      if (titleImage) {
-        formData.append("titleImage", titleImage);
-      }
-      await api.put(`/blogs/${id}`, formData);
-      navigate(`/blog/${id}`);
-    } catch (error) {
-      setError(error.response?.data?.message || "Failed to update blog");
-      console.log(error.response?.data);
-    } finally {
-      setSubmitting(false);
-    }
-  };
   if (!blog) {
-    return <h2>Loading...</h2>;
+    return <p className='page-loading'>Loading…</p>;
+  }
+
+  // Only the author may edit — the API would reject the save anyway
+  if (String(blog.author?._id) !== String(user?.id)) {
+    return (
+      <div className='containerBox status-page'>
+        <h1>Can&apos;t edit this blog</h1>
+        <p>You can only edit blogs you wrote.</p>
+        <Link to={`/blog/${id}`} className='inputBtn'>
+          View blog
+        </Link>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <div className='add-blog-container'>
-        <h1
-          className='blog-title'
-          style={{
-            width: "100%",
-            margin: "20px auto",
-            fontWeight: "700",
-            color: "var(--dark)",
-            position: "relative",
-          }}>
-          Edit Blog
-          <BackButton />
-        </h1>
-        <form
-          onSubmit={handleSubmit}
-          className='flex add-blog-form formContainer'>
-          {/* <InputBox /> */}
-          <InputBox
-            label='Title'
-            type='text'
-            id='title'
-            value={title}
-            placeholder='Title'
-            onChange={(e) => setTitle(e.target.value)}
-          />
+    <div className='add-blog-container'>
+      <header className='page-header'>
+        <h1>Edit Blog</h1>
+        <BackButton fallback={`/blog/${id}`} />
+      </header>
 
-          <InputBox
-            label='Description'
-            rows='3'
-            id='description'
-            value={description}
-            placeholder='Description'
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
-          <div className='form-group'>
-            <label htmlFor='label'>Category</label>
-            <select
-              id='label'
-              name='label'
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}>
-              <option value=''>Select a category</option>
-              {labels.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className='form-group'>
-            {/* <label>Tags</label> */}
-            <InputBox
-              label='Tags'
-              id='tags'
-              type='text'
-              placeholder='coding, nature, India, modi'
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-            />
-            <small>Separate tags with commas.</small>
-          </div>
-          <div className='form-group'>
-            <label htmlFor='titleImage'>Title Image:</label>
-            <div className='sub-form-group'>
-              <input
-                type='file'
-                placeholder='Title Image'
-                onChange={handleImageChange}
-              />
-              {/* {titleImage && (
-                <div className='image-preview'>
-                  <img
-                    src={imagePreview}
-                    alt='Preview'
-                    className='w-full h-full object-cover'
-                  />
-                </div>
-              )} */}
-              {imagePreview && (
-                <div className='image-preview'>
-                  <img
-                    src={imagePreview}
-                    alt='Preview'
-                    className='w-full h-full object-cover'
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-          <RTE value={content} onChange={setContent} />
-
-          {error && <p style={{ color: "#c0392b" }}>{error}</p>}
-
-          <button type='submit' className='inputBtn' disabled={submitting}>
-            {submitting ? "Updating..." : "Update Blog"}
-          </button>
-        </form>
-        <BackButton />
-      </div>
-      {/* <div className='blog-container'> */}
-      {/* <h1 className='blog-title'>{blog.title}</h1>
-        <img src={blog.featuredImage} alt={blog.title} className='blog-image' />
-        <p className='blog-auther'>Author: {blog.author?.name}</p>
-        <div
-          className='blog-content'
-          dangerouslySetInnerHTML={{ __html: blog.content }}></div> */}
-      {/* </div> */}
+      <BlogForm
+        initialValues={blog}
+        submitLabel='Update Blog'
+        submittingLabel='Updating…'
+        onSubmit={handleUpdate}
+      />
     </div>
   );
 }

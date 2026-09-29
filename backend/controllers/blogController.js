@@ -1,10 +1,75 @@
+import mongoose from "mongoose";
 import Blog from "../models/Blog.js";
-import cloudinary from "../config/cloudinary.js";
 import User from "../models/User.js";
-import upload from "../middleware/uploadImage.js";
+import Comment from "../models/Comment.js";
+import { uploadImage } from "../config/cloudinary.js";
+import {
+  CARD_FIELDS,
+  escapeRegex,
+  getPagination,
+  getBlogStatus,
+} from "../services/blogServices.js";
+
+const isValidId = (id) => mongoose.isValidObjectId(id);
+
+const parseTags = (tags) => {
+  if (tags === undefined || tags === null) return null;
+
+  // Tags may arrive as a JSON-stringified array (e.g. '["a","b"]') or
+  // as a plain comma-separated string — handle both gracefully.
+  let parsed;
+  try {
+    parsed = JSON.parse(tags);
+  } catch {
+    parsed = String(tags).split(",");
+  }
+  if (!Array.isArray(parsed)) parsed = String(tags).split(",");
+
+  return [
+    ...new Set(
+      parsed.map((t) => String(t).trim().toLowerCase()).filter(Boolean),
+    ),
+  ];
+};
+
+// Shared by the home feed and search: one page of lightweight blog cards.
+const sendBlogPage = async (req, res, filter) => {
+  const { page, limit, skip } = getPagination(req.query);
+
+  const [blogs, total] = await Promise.all([
+    Blog.find(filter)
+      .select(CARD_FIELDS)
+      .populate("author", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Blog.countDocuments(filter),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    count: blogs.length,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
+    blogs,
+  });
+};
+
 export const createBlog = async (req, res) => {
   try {
     const { title, description, label, tags, content } = req.body;
+
+    // Validate before uploading so a bad request doesn't leave an orphan
+    // image on Cloudinary.
+    if (!title?.trim() || !description?.trim() || !label || !content?.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Title, description, category and content are required",
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -12,21 +77,13 @@ export const createBlog = async (req, res) => {
       });
     }
 
-    const result = await cloudinary.uploader.upload(req.file.path);
+    const result = await uploadImage(req.file.buffer);
 
-    const tagArray = tags
-      ? tags
-          .split(",")
-          .map((tag) => tag.trim().toLowerCase())
-          .filter(Boolean)
-      : [];
-
-    // console.log(req.user);
     const blog = await Blog.create({
       title,
       description,
       label,
-      tags: tagArray,
+      tags: parseTags(tags) || [],
       content,
       featuredImage: result.secure_url,
       author: req.user.id,
@@ -43,19 +100,10 @@ export const createBlog = async (req, res) => {
     });
   }
 };
-//
+
 export const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find()
-      .populate("author", "name email")
-      .sort({ createdAt: -1 });
-    // const blogs = await Blog.find();
-
-    res.status(200).json({
-      success: true,
-      count: blogs.length,
-      blogs,
-    });
+    await sendBlogPage(req, res, {});
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -66,31 +114,12 @@ export const getAllBlogs = async (req, res) => {
 
 export const getMyBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({
-      author: req.user.id,
-    }).sort({ createdAt: -1 });
-
-    const totalLikes = blogs.reduce(
-      (sum, blog) => sum + (blog.likes?.length || 0),
-      0,
-    );
-
-    const totalViews = blogs.reduce((sum, blog) => sum + (blog.views || 0), 0);
-
-    const totalSaves = blogs.reduce(
-      (sum, blog) => sum + (blog.savedBy?.length || 0),
-      0,
-    );
+    const { blogs, stats } = await getBlogStatus(req.user._id);
 
     res.status(200).json({
       success: true,
       blogs,
-      stats: {
-        totalBlogs: blogs.length,
-        totalLikes,
-        totalViews,
-        totalSaves,
-      },
+      stats,
     });
   } catch (error) {
     res.status(500).json({
@@ -99,13 +128,20 @@ export const getMyBlogs = async (req, res) => {
     });
   }
 };
-//
+
 export const getBlogById = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id).populate(
-      "author",
-      "_id name email",
-    );
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    const blog = await Blog.findById(req.params.id)
+      .select("-viewedBy -savedBy")
+      .populate("author", "_id name image")
+      .lean();
 
     if (!blog) {
       return res.status(404).json({
@@ -113,11 +149,21 @@ export const getBlogById = async (req, res) => {
         message: "Blog not found",
       });
     }
-    res.json(blog);
-    // res.status(200).json({
-    //   success: true,
-    //   blog,
-    // });
+
+    // Send counts + the viewer's own like/save state instead of the raw
+    // likes array. `viewerId` tells the client which user these flags are for.
+    const viewerId = req.user ? String(req.user._id) : null;
+    const { likes = [], ...rest } = blog;
+
+    res.json({
+      ...rest,
+      likesCount: likes.length,
+      liked: viewerId ? likes.some((uid) => String(uid) === viewerId) : false,
+      bookmarked: viewerId
+        ? (req.user.savedBlogs || []).some((bid) => String(bid) === String(blog._id))
+        : false,
+      viewerId,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -125,11 +171,17 @@ export const getBlogById = async (req, res) => {
     });
   }
 };
-//
 
 export const updateBlog = async (req, res) => {
   try {
     const { title, description, label, tags, content } = req.body;
+
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
 
     const blog = await Blog.findById(req.params.id);
 
@@ -152,26 +204,12 @@ export const updateBlog = async (req, res) => {
     blog.description = description || blog.description;
     blog.label = label || blog.label;
 
-    // Tags may arrive as a JSON-stringified array (e.g. '["a","b"]') or
-    // as a plain comma-separated string — handle both gracefully.
-    if (tags !== undefined && tags !== null) {
-      let parsedTags;
-      try {
-        parsedTags = JSON.parse(tags);
-      } catch {
-        parsedTags = tags
-          .split(",")
-          .map((t) => t.trim().toLowerCase())
-          .filter(Boolean);
-      }
-      blog.tags = Array.isArray(parsedTags)
-        ? parsedTags.map((t) => t.trim().toLowerCase()).filter(Boolean)
-        : blog.tags;
-    }
+    const parsedTags = parseTags(tags);
+    if (parsedTags) blog.tags = parsedTags;
 
     blog.content = content || blog.content;
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await uploadImage(req.file.buffer);
       blog.featuredImage = result.secure_url;
     }
     await blog.save();
@@ -187,9 +225,16 @@ export const updateBlog = async (req, res) => {
     });
   }
 };
-//
+
 export const deleteBlog = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
     const blog = await Blog.findById(req.params.id);
 
     if (!blog) {
@@ -207,7 +252,15 @@ export const deleteBlog = async (req, res) => {
       });
     }
 
-    await Blog.findByIdAndDelete(req.params.id);
+    // Remove the blog along with its comments and any bookmarks pointing at it
+    await Promise.all([
+      Blog.findByIdAndDelete(req.params.id),
+      Comment.deleteMany({ blog: blog._id }),
+      User.updateMany(
+        { savedBlogs: blog._id },
+        { $pull: { savedBlogs: blog._id } },
+      ),
+    ]);
 
     res.status(200).json({
       success: true,
@@ -222,36 +275,29 @@ export const deleteBlog = async (req, res) => {
     });
   }
 };
+
 export const searchBlogs = async (req, res) => {
   try {
-    const { query } = req.query;
+    const query = String(req.query.query || "").trim();
 
-    if (!query || !query.trim()) {
-      return res.json({ success: true, blogs: [] });
+    if (!query) {
+      return res.json({ success: true, blogs: [], total: 0, page: 1, totalPages: 0 });
     }
 
-    const regex = { $regex: query.trim(), $options: "i" };
+    const regex = { $regex: escapeRegex(query), $options: "i" };
 
     // Author is a ref, so we resolve matching user IDs first,
     // then include them as a separate $or condition.
-    const matchingAuthors = await User.find({ name: regex }).select("_id");
+    const matchingAuthors = await User.find({ name: regex }).select("_id").lean();
     const authorIds = matchingAuthors.map((u) => u._id);
 
-    const blogs = await Blog.find({
+    await sendBlogPage(req, res, {
       $or: [
         { title: regex },
         { tags: regex },
         { label: regex },
         ...(authorIds.length ? [{ author: { $in: authorIds } }] : []),
       ],
-    })
-      .populate("author", "name email")
-      .sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      count: blogs.length,
-      blogs,
     });
   } catch (error) {
     res.status(500).json({
@@ -263,9 +309,16 @@ export const searchBlogs = async (req, res) => {
 
 export const getAutherInfo = async (req, res) => {
   try {
-    const author = await User.findById(req.params.id).select(
-      "name email image about createdAt",
-    );
+    if (!isValidId(req.params.id)) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Author not found" });
+    }
+
+    const author = await User.findById(req.params.id)
+      // Email stays private — this endpoint is public
+      .select("name image about createdAt")
+      .lean();
 
     if (!author) {
       return res
@@ -273,27 +326,13 @@ export const getAutherInfo = async (req, res) => {
         .json({ success: false, message: "Author not found" });
     }
 
-    const blogs = await Blog.find({ author: req.params.id })
-      .sort({ createdAt: -1 })
-      .select("title description featuredImage likes views savedBy createdAt");
-
-    const totalLikes = blogs.reduce((sum, b) => sum + b.likes.length, 0);
-    const totalViews = blogs.reduce((sum, b) => sum + b.views, 0);
-    const totalSaves = blogs.reduce(
-      (sum, b) => sum + (b.savedBy?.length || 0),
-      0,
-    );
+    const { blogs, stats } = await getBlogStatus(author._id);
 
     res.json({
       success: true,
       author,
       blogs,
-      stats: {
-        totalBlogs: blogs.length,
-        totalLikes,
-        totalViews,
-        totalSaves,
-      },
+      stats,
     });
   } catch (error) {
     res.status(500).json({
@@ -305,7 +344,33 @@ export const getAutherInfo = async (req, res) => {
 
 export const toggleLike = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    const userId = req.user._id;
+    const options = { returnDocument: "after", projection: { likes: 1 } };
+
+    // Try to unlike first; if the user hadn't liked it, nothing matches and
+    // we like it instead. Both steps are atomic.
+    let blog = await Blog.findOneAndUpdate(
+      { _id: req.params.id, likes: userId },
+      { $pull: { likes: userId } },
+      options,
+    );
+    let liked = false;
+
+    if (!blog) {
+      blog = await Blog.findByIdAndUpdate(
+        req.params.id,
+        { $addToSet: { likes: userId } },
+        options,
+      );
+      liked = true;
+    }
 
     if (!blog) {
       return res.status(404).json({
@@ -314,29 +379,10 @@ export const toggleLike = async (req, res) => {
       });
     }
 
-    const userId = req.user._id.toString();
-    const alreadyLiked = (blog.likes || []).some(
-      (uid) => uid.toString() === userId,
-    );
-
-    // Use atomic $pull / $addToSet so missing arrays on old documents
-    // are never a problem — MongoDB creates the array if it doesn't exist.
-    if (alreadyLiked) {
-      await Blog.findByIdAndUpdate(req.params.id, {
-        $pull: { likes: req.user._id },
-      });
-    } else {
-      await Blog.findByIdAndUpdate(req.params.id, {
-        $addToSet: { likes: req.user._id },
-      });
-    }
-
-    const updated = await Blog.findById(req.params.id);
-
     res.json({
       success: true,
-      likesCount: updated.likes.length,
-      liked: !alreadyLiked,
+      likesCount: blog.likes.length,
+      liked,
     });
   } catch (error) {
     console.error("toggleLike error:", error.message);
@@ -346,88 +392,89 @@ export const toggleLike = async (req, res) => {
     });
   }
 };
+
 export const viewBlog = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    if (!isValidId(req.params.id)) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    const options = { returnDocument: "after", projection: { views: 1 } };
+
+    // Logged-in users are counted once; guests every visit.
+    let blog = req.user
+      ? await Blog.findOneAndUpdate(
+          { _id: req.params.id, viewedBy: { $ne: req.user._id } },
+          { $inc: { views: 1 }, $addToSet: { viewedBy: req.user._id } },
+          options,
+        )
+      : await Blog.findByIdAndUpdate(
+          req.params.id,
+          { $inc: { views: 1 } },
+          options,
+        );
+
+    // Already viewed by this user — just read the current count
+    if (!blog) blog = await Blog.findById(req.params.id).select("views");
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    if (req.user) {
-      const alreadyViewed = (blog.viewedBy || []).some(
-        (uid) => uid.toString() === req.user._id.toString(),
-      );
-      if (!alreadyViewed) {
-        await Blog.findByIdAndUpdate(req.params.id, {
-          $inc: { views: 1 },
-          $addToSet: { viewedBy: req.user._id },
-        });
-      }
-    } else {
-      await Blog.findByIdAndUpdate(req.params.id, {
-        $inc: { views: 1 },
-      });
-    }
-
-    const updated = await Blog.findById(req.params.id);
-    res.status(200).json({ views: updated.views });
+    res.status(200).json({ views: blog.views });
   } catch (error) {
     console.error("viewBlog error:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
-export const getLabels = async (req, res) => {
-  try {
-    // const labels = await Label.find();
-    const labels = [
-      "Anime",
-      "Art & Design",
-      "Automotive",
-      "Beauty",
-      "Books",
-      "Business",
-      "Career",
-      "Cloud Computing",
-      "Cryptocurrency",
-      "Cybersecurity",
-      "Data Science",
-      "DevOps",
-      "Education",
-      "Entertainment",
-      "Fashion",
-      "Finance",
-      "Fitness",
-      "Food",
-      "Gaming",
-      "Health",
-      "History",
-      "Home & Garden",
-      "Lifestyle",
-      "Mental Health",
-      "Mobile Development",
-      "Movies",
-      "Music",
-      "Nature",
-      "News",
-      "Open Source",
-      "Personal Finance",
-      "Pets",
-      "Photography",
-      "Politics",
-      "Programming",
-      "Science",
-      "Software Engineering",
-      "Sports",
-      "Technology",
-      "Travel",
-      "TV Shows",
-      "Web Development",
-    ];
+const LABELS = [
+  "Anime",
+  "Art & Design",
+  "Automotive",
+  "Beauty",
+  "Books",
+  "Business",
+  "Career",
+  "Cloud Computing",
+  "Cryptocurrency",
+  "Cybersecurity",
+  "Data Science",
+  "DevOps",
+  "Education",
+  "Entertainment",
+  "Fashion",
+  "Finance",
+  "Fitness",
+  "Food",
+  "Gaming",
+  "Health",
+  "History",
+  "Home & Garden",
+  "Lifestyle",
+  "Mental Health",
+  "Mobile Development",
+  "Movies",
+  "Music",
+  "Nature",
+  "News",
+  "Open Source",
+  "Personal Finance",
+  "Pets",
+  "Photography",
+  "Politics",
+  "Programming",
+  "Science",
+  "Software Engineering",
+  "Sports",
+  "Technology",
+  "Travel",
+  "TV Shows",
+  "Web Development",
+];
 
-    res.status(200).json(labels);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+export const getLabels = async (req, res) => {
+  // Static list — let the browser cache it for a day
+  res.set("Cache-Control", "public, max-age=86400");
+  res.status(200).json(LABELS);
 };

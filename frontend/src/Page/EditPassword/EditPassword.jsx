@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./EditPassword.css";
-import { InputBox } from "../../components";
+import InputBox from "../../components/InputBox/InputBox";
 import api from "../../api/axios";
+
+const MIN_PASSWORD_LENGTH = 8;
 
 function EditPassword() {
   const navigate = useNavigate();
@@ -18,12 +20,16 @@ function EditPassword() {
     e.preventDefault();
     setError("");
 
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+      return;
+    }
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters");
+    if (newPassword === currentPassword) {
+      setError("The new password must be different from the current one");
       return;
     }
 
@@ -44,56 +50,56 @@ function EditPassword() {
   };
 
   return (
-    <div className="flex formBox">
-      <h1>Change Password</h1>
+    <div className='flex formBox edit-password'>
+      <h2>Change Password</h2>
 
-      <form className=" flex formContainer" onSubmit={handleSubmit}>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
         <InputBox
-          label="Current Password"
-          type="password"
-          id="current-password"
+          label='Current Password'
+          type='password'
+          id='current-password'
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          placeholder="Your current password"
+          placeholder='Your current password'
+          autoComplete='current-password'
         />
 
         <InputBox
-          label="New Password"
-          type="password"
-          id="new-password"
+          label='New Password'
+          type='password'
+          id='new-password'
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="At least 8 characters"
+          placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
+          autoComplete='new-password'
         />
 
         <InputBox
-          label="Confirm Password"
-          type="password"
-          id="confirm-password"
+          label='Confirm Password'
+          type='password'
+          id='confirm-password'
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Re-enter new password"
+          placeholder='Re-enter new password'
+          autoComplete='new-password'
         />
 
-        <div className="password-info">
-          <p>Password must:</p>
-          <ul>
-            <li>Be at least 8 characters long</li>
-            <li>Contain a number</li>
-            <li>Include uppercase and lowercase letters</li>
-          </ul>
+        <div className='password-info'>
+          <p>Your password must be at least {MIN_PASSWORD_LENGTH} characters long.</p>
+          <p>Mixing upper and lowercase letters, numbers and symbols makes it stronger.</p>
+          <p>You&apos;ll be signed out on all devices after changing it.</p>
         </div>
 
-        {error && <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>}
+        {error && <p className='error-text'>{error}</p>}
 
-        <button type="submit" className="inputBtn" disabled={loading}>
+        <button type='submit' className='inputBtn' disabled={loading}>
           {loading ? "Updating…" : "Update Password"}
         </button>
       </form>
 
-      <label className="forgot-link">
-        <Link to="/forgot-password">Forgot Password?</Link>
-      </label>
+      <p className='forgot-link'>
+        <Link to='/forgot-password'>Forgot Password?</Link>
+      </p>
     </div>
   );
 }

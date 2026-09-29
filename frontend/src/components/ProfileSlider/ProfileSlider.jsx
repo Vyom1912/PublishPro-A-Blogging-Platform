@@ -1,13 +1,23 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaBars, FaXmark } from "react-icons/fa6";
+import { thumbUrl } from "../../utils/image";
 import "./ProfileSlider.css";
+
+const TABS = [
+  { id: "overview", label: "Overview" },
+  { id: "myBlogs", label: "My Blogs" },
+  { id: "savedBlogs", label: "Saved Blogs" },
+  { id: "editProfile", label: "Edit Profile" },
+  { id: "editPassword", label: "Change Password" },
+];
 
 function ProfileSlider({ user, activeTab, setActiveTab, logout }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
 
@@ -16,55 +26,53 @@ function ProfileSlider({ user, activeTab, setActiveTab, logout }) {
     setMenuOpen(false); // close menu after selecting on mobile
   };
 
+  const activeLabel = TABS.find((t) => t.id === activeTab)?.label;
+
   return (
-    <aside className='sidebar flex'>
-      <div className='user-info flex'>
+    <aside className='sidebar'>
+      <div className='sidebar-top-row flex'>
         {user.image ? (
-          <img src={user.image} alt={user.name} className='user-img' />
+          <img src={thumbUrl(user.image, 200)} alt={user.name} className='user-img' />
         ) : (
           <div className='avatar-placeholder flex'>
             {user.name?.charAt(0).toUpperCase()}
           </div>
         )}
-      </div>
 
-      {/* Name + hamburger row */}
-      <div className='user-info sidebar-top-row flex'>
-        <p>{user.name}</p>
+        <div className='sidebar-name'>
+          <p>{user.name}</p>
+          {/* On phones the menu is collapsed, so show where the user is */}
+          <span className='sidebar-current'>{activeLabel}</span>
+        </div>
 
         <button
+          type='button'
           className='sidebar-hamburger'
           onClick={() => setMenuOpen(!menuOpen)}
-          aria-label='Toggle menu'>
-          {menuOpen ? "✕" : "☰"}
+          aria-label={menuOpen ? "Close profile menu" : "Open profile menu"}
+          aria-expanded={menuOpen}>
+          {menuOpen ? <FaXmark /> : <FaBars />}
         </button>
       </div>
 
-      <div className={`user-info-links flex ${menuOpen ? "links-open" : ""}`}>
-        <button className={`inputBtn ${activeTab === "overview" ? "inputBtnActive" : ""}`} onClick={() => handleTab("overview")}>
-          Overview
-        </button>
-        <button className='inputBtn'>
-          <Link to='/add-blog' onClick={() => setMenuOpen(false)}>
-            + Add Blog
-          </Link>
-        </button>
-        <button className={`inputBtn ${activeTab === "myBlogs" ? "inputBtnActive" : ""}`} onClick={() => handleTab("myBlogs")}>
-          My Blogs
-        </button>
-        <button className={`inputBtn ${activeTab === "savedBlogs" ? "inputBtnActive" : ""}`} onClick={() => handleTab("savedBlogs")}>
-          Saved Blogs
-        </button>
-        <button className={`inputBtn ${activeTab === "editProfile" ? "inputBtnActive" : ""}`} onClick={() => handleTab("editProfile")}>
-          Edit Profile
-        </button>
-        <button className={`inputBtn ${activeTab === "editPassword" ? "inputBtnActive" : ""}`} onClick={() => handleTab("editPassword")}>
-          Edit Password
-        </button>
-        <button className='inputBtn' onClick={handleLogout}>
+      <nav className={`user-info-links${menuOpen ? " links-open" : ""}`}>
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type='button'
+            className={`inputBtn${activeTab === tab.id ? " inputBtnActive" : ""}`}
+            aria-current={activeTab === tab.id ? "page" : undefined}
+            onClick={() => handleTab(tab.id)}>
+            {tab.label}
+          </button>
+        ))}
+        <Link to='/add-blog' className='inputBtn'>
+          + Write a Blog
+        </Link>
+        <button type='button' className='inputBtn sidebar-logout' onClick={handleLogout}>
           Logout
         </button>
-      </div>
+      </nav>
     </aside>
   );
 }

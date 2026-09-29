@@ -35,20 +35,46 @@ const setAuthCookies = (res, accessToken, refreshToken) => {
     secure: isProduction,
     sameSite: isProduction ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-});
+  });
 };
+
+// clearCookie only works when the options match the ones used to set the
+// cookie — without sameSite/secure the browser keeps the cookie in production.
+const clearAuthCookies = (res) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+  };
+
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshToken", cookieOptions);
+};
+
+const MIN_PASSWORD_LENGTH = 8;
+
+const normaliseEmail = (email) => String(email || "").trim().toLowerCase();
 
 // ---------------------------------------------------------------------------
 // Register
 // ---------------------------------------------------------------------------
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, password } = req.body;
+    const email = normaliseEmail(req.body.email);
 
-    if (!name || !email || !password) {
+    if (!name?.trim() || !email || !password) {
       return res.status(400).json({
         success: false,
         message: "Please fill all the fields",
+      });
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return res.status(400).json({
+        success: false,
+        message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
       });
     }
 
@@ -110,7 +136,8 @@ export const registerUser = async (req, res) => {
 // ---------------------------------------------------------------------------
 export const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { password } = req.body;
+    const email = normaliseEmail(req.body.email);
 
     if (!email || !password) {
       return res.status(400).json({
@@ -221,17 +248,11 @@ export const refreshToken = async (req, res) => {
 // ---------------------------------------------------------------------------
 export const logoutUser = async (req, res) => {
   // Delete just the session for the current refresh token
-  await Session.deleteOne({ refreshToken: req.cookies.refreshToken });
+  if (req.cookies.refreshToken) {
+    await Session.deleteOne({ refreshToken: req.cookies.refreshToken });
+  }
 
-  const isProduction = process.env.NODE_ENV === "production";
-  const cookieOptions = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  };
-
-  res.clearCookie("accessToken", cookieOptions);
-  res.clearCookie("refreshToken", cookieOptions);
+  clearAuthCookies(res);
 
   res.json({ message: "Logged out successfully" });
 };
@@ -243,15 +264,7 @@ export const logoutAllDevices = async (req, res) => {
   // req.user is set by authMiddleware
   await Session.deleteMany({ user: req.user._id });
 
-  const isProduction = process.env.NODE_ENV === "production";
-  const cookieOptions = {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  };
-
-  res.clearCookie("accessToken", cookieOptions);
-  res.clearCookie("refreshToken", cookieOptions);
+  clearAuthCookies(res);
 
   res.json({ message: "Logged out from all devices" });
 };
@@ -260,8 +273,15 @@ export const logoutAllDevices = async (req, res) => {
 // Get current user (used by AuthContext on app load)
 // ---------------------------------------------------------------------------
 export const getMe = async (req, res) => {
-  // req.user is already the full user document (minus password) from authMiddleware
-  const user = await User.findById(req.user.id).select("-password");
+  // req.user is already the full user document (minus password) from
+  // authMiddleware — no need to query again. Strip the fields the client
+  // never uses so the first request of every page load stays small.
+  const {
+    savedBlogs,
+    resetPasswordToken,
+    resetPasswordExpire,
+    ...user
+  } = req.user.toObject();
 
   res.json({
     success: true,
@@ -283,6 +303,13 @@ export const changePassword = async (req, res) => {
       });
     }
 
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      return res.status(400).json({
+        success: false,
+        message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
+      });
+    }
+
     // Re-fetch with password since it has select:false in the schema
     const user = await User.findById(req.user.id).select("+password");
 
@@ -301,8 +328,7 @@ export const changePassword = async (req, res) => {
     // Any stolen refresh tokens are now useless.
     await Session.deleteMany({ user: user._id });
 
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
+    clearAuthCookies(res);
 
     res.json({
       success: true,
@@ -321,7 +347,14 @@ export const changePassword = async (req, res) => {
 // ---------------------------------------------------------------------------
 export const forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = normaliseEmail(req.body.email);
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter your email",
+      });
+    }
 
     const user = await User.findOne({ email });
 
@@ -368,6 +401,13 @@ export const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
     const { password } = req.body;
+
+    if (!password || password.length < MIN_PASSWORD_LENGTH) {
+      return res.status(400).json({
+        success: false,
+        message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
+      });
+    }
 
     const user = await User.findOne({
       resetPasswordToken: token,

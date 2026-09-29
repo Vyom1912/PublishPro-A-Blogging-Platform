@@ -1,9 +1,12 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
-import { BackButton, InputBox } from "../../components";
-import "./ResetPassword.css";
+import InputBox from "../../components/InputBox/InputBox";
+import "../ForgotPassword/ForgotPassword.css";
+
+const MIN_PASSWORD_LENGTH = 8;
+
 function ResetPassword() {
   const { setUser } = useAuth();
   const { token } = useParams();
@@ -17,6 +20,10 @@ function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+      return;
+    }
     if (password !== confirm) {
       setError("Passwords do not match");
       return;
@@ -26,7 +33,7 @@ function ResetPassword() {
       const { data } = await api.post(`/auth/reset-password/${token}`, {
         password,
       });
-      setMessage(data.message);
+      setMessage(`${data.message}. Taking you to login…`);
       setUser(null);
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
@@ -37,7 +44,7 @@ function ResetPassword() {
   };
 
   return (
-    <div className='flex formBox forgot-password-box'>
+    <div className='flex formBox'>
       <h1>Set new password</h1>
 
       <form className='flex formContainer' onSubmit={handleSubmit}>
@@ -47,7 +54,8 @@ function ResetPassword() {
           id='reset-password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder='Enter new password'
+          placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`}
+          autoComplete='new-password'
         />
         <InputBox
           label='Confirm Password'
@@ -56,20 +64,20 @@ function ResetPassword() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           placeholder='Re-enter new password'
+          autoComplete='new-password'
         />
 
-        {error && (
-          <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>
-        )}
-        {message && (
-          <p style={{ color: "green", textAlign: "left" }}>{message}</p>
-        )}
+        {error && <p className='error-text'>{error}</p>}
+        {message && <p className='success-text'>{message}</p>}
 
-        <button type='submit' className='inputBtn' disabled={loading}>
+        <button type='submit' className='inputBtn' disabled={loading || Boolean(message)}>
           {loading ? "Saving…" : "Reset Password"}
         </button>
       </form>
-      <BackButton />
+
+      <p className='form-footer-link'>
+        <Link to='/forgot-password'>Link expired? Request a new one</Link>
+      </p>
     </div>
   );
 }

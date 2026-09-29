@@ -1,29 +1,34 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../../api/axios";
-import { BackButton, InputBox } from "../../components";
+import InputBox from "../../components/InputBox/InputBox";
 import "./ForgotPassword.css";
+
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setMessage("");
     setLoading(true);
     try {
       const res = await api.post("/auth/forgot-password", { email });
       setMessage(res.data.message);
-    } catch (error) {
-      setMessage("Something went wrong. Please try again.");
+    } catch (err) {
+      setError(err.response?.data?.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className='flex formBox forgot-password-box'>
+    <div className='flex formBox'>
       <h1>Reset your password</h1>
-      <p style={{ color: "var(--mid-dark)", textAlign: "left", width: "100%" }}>
+      <p className='form-intro'>
         Enter your email and we&apos;ll send you a reset link.
       </p>
 
@@ -35,19 +40,22 @@ function ForgotPassword() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder='you@example.com'
+          autoComplete='email'
+          inputMode='email'
+          required
         />
 
-        {message && (
-          <p style={{ color: "var(--mid-dark)", textAlign: "left" }}>
-            {message}
-          </p>
-        )}
+        {message && <p className='success-text'>{message}</p>}
+        {error && <p className='error-text'>{error}</p>}
 
         <button type='submit' className='inputBtn' disabled={loading}>
           {loading ? "Sending…" : "Send Reset Link"}
         </button>
       </form>
-      <BackButton/>
+
+      <p className='form-footer-link'>
+        <Link to='/login'>← Back to login</Link>
+      </p>
     </div>
   );
 }

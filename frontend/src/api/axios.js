@@ -4,11 +4,13 @@ import axios from "axios";
 // `withCredentials: true` is critical: it tells the browser to send
 // httpOnly cookies (accessToken, refreshToken) with every request.
 // Without this, the backend auth middleware would never see the tokens.
+//
+// Set VITE_API_URL in frontend/.env to point at a local backend,
+// e.g. VITE_API_URL=http://localhost:5000/api
 const api = axios.create({
-  // baseURL: "http://localhost:5000/api",
-
-  baseURL: "https://publishpro-a-blogging-platform-backend.onrender.com/api",
-  //  baseURL: import.meta.env.VITE_API_URL,
+  baseURL:
+    import.meta.env.VITE_API_URL ||
+    "https://publishpro-a-blogging-platform-backend.onrender.com/api",
   withCredentials: true, // IMPORTANT: sends cookies cross-origin
 });
 
@@ -45,6 +47,7 @@ api.interceptors.response.use(
     // Also skip the refresh endpoint itself to avoid infinite loops
     if (
       error.response?.status === 401 &&
+      originalRequest &&
       !originalRequest._retry &&
       !originalRequest.url.includes("/auth/refresh") &&
       !originalRequest.url.includes("/auth/login")
@@ -66,8 +69,10 @@ api.interceptors.response.use(
         processQueue(null);
         return api(originalRequest); // retry the original failed request
       } catch (refreshError) {
-        // Refresh failed (expired or revoked) — user must log in again
+        // Refresh failed (expired or revoked) — user must log in again.
+        // Let AuthContext know so the UI stops showing a logged-in state.
         processQueue(refreshError);
+        window.dispatchEvent(new Event("auth:expired"));
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

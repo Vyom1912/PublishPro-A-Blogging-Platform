@@ -20,46 +20,37 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadUser();
-  }, []);
+    const loadUser = async () => {
+      try {
+        const res = await api.get("/auth/me");
+        setUser(normaliseUser(res.data.user));
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const loadUser = async () => {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(normaliseUser(res.data.user));
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    loadUser();
+
+    // Fired by the axios interceptor when the refresh token is no longer valid
+    const handleExpired = () => setUser(null);
+    window.addEventListener("auth:expired", handleExpired);
+    return () => window.removeEventListener("auth:expired", handleExpired);
+  }, []);
 
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (_) {}
+    } catch {
+      // Clear the local session even if the request fails
+    }
     setUser(null);
   };
 
-  // Block rendering until the session restore check is complete.
-  // This prevents protected pages from briefly flashing or redirecting
-  // to /login on a page refresh before /auth/me has responded.
-  if (loading) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-          fontSize: "1.2rem",
-          color: "#555",
-        }}>
-        Loading...
-      </div>
-    );
-  }
-
+  // The app renders straight away — public pages (home, blog posts) don't
+  // have to wait for /auth/me. Only ProtectedRoute / PublicOnlyRoute wait
+  // on `loading` before deciding whether to redirect.
   return (
     <AuthContext.Provider
       value={{

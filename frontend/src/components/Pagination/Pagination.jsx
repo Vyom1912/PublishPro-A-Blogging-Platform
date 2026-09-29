@@ -1,42 +1,54 @@
-import React from "react";
-import { useState } from "react";
+import "./Pagination.css";
 
-function Pagination() {
-  const [blogs, setBlogs] = useState([]);
+// Page numbers to show: always first & last, plus neighbours of the current
+// page, with "…" gaps — keeps the bar short enough for a phone screen.
+const getPages = (current, total) => {
+  const pages = new Set([1, total, current - 1, current, current + 1]);
+  const sorted = [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 8;
+  const result = [];
+  sorted.forEach((page, i) => {
+    if (i > 0 && page - sorted[i - 1] > 1) result.push(`gap-${page}`);
+    result.push(page);
+  });
+  return result;
+};
 
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-
-  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
-
-  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
 
   return (
-    <div className='pagination'>
+    <nav className='pagination' aria-label='Pagination'>
       <button
         disabled={currentPage === 1}
-        onClick={() => setCurrentPage((prev) => prev - 1)}>
-        Previous
+        onClick={() => onPageChange(currentPage - 1)}
+        aria-label='Previous page'>
+        ‹ Prev
       </button>
 
-      {[...Array(totalPages)].map((_, index) => (
-        <button
-          key={index}
-          className={currentPage === index + 1 ? "active-page" : ""}
-          onClick={() => setCurrentPage(index + 1)}>
-          {index + 1}
-        </button>
-      ))}
+      {getPages(currentPage, totalPages).map((page) =>
+        typeof page === "string" ? (
+          <span key={page} className='pagination-gap'>
+            …
+          </span>
+        ) : (
+          <button
+            key={page}
+            className={currentPage === page ? "active-page" : ""}
+            aria-current={currentPage === page ? "page" : undefined}
+            onClick={() => onPageChange(page)}>
+            {page}
+          </button>
+        ),
+      )}
 
       <button
         disabled={currentPage === totalPages}
-        onClick={() => setCurrentPage((prev) => prev + 1)}>
-        Next
+        onClick={() => onPageChange(currentPage + 1)}
+        aria-label='Next page'>
+        Next ›
       </button>
-    </div>
+    </nav>
   );
 }
 

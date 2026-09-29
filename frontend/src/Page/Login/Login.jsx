@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
@@ -12,6 +12,10 @@ function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Send the user back to the page that asked them to log in
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +24,7 @@ function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
       setUser(res.data.user);
-      navigate("/");
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -29,42 +33,48 @@ function Login() {
   };
 
   return (
-    <div className="flex formBox login">
+    <div className='flex formBox login'>
       <h1>Welcome back</h1>
 
-      <form className=" flex formContainer" onSubmit={handleSubmit}>
+      <form className='flex formContainer' onSubmit={handleSubmit}>
         <InputBox
-          label="Email"
-          type="email"
-          id="login-email"
+          label='Email'
+          type='email'
+          id='login-email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          placeholder='you@example.com'
+          autoComplete='email'
+          inputMode='email'
+          required
         />
 
         <InputBox
-          label="Password"
-          type="password"
-          id="login-password"
+          label='Password'
+          type='password'
+          id='login-password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter your password"
+          placeholder='Enter your password'
+          required
         />
 
-        {error && <p style={{ color: "#c0392b", textAlign: "left" }}>{error}</p>}
+        {error && <p className='error-text'>{error}</p>}
 
-        <div className="forgot-password-link">
-          <Link to="/forgot-password">Forgot password?</Link>
+        <div className='forgot-password-link'>
+          <Link to='/forgot-password'>Forgot password?</Link>
         </div>
 
-        <button type="submit" className="inputBtn" disabled={loading}>
+        <button type='submit' className='inputBtn' disabled={loading}>
           {loading ? "Signing in…" : "Login"}
         </button>
       </form>
 
-      <p className="login-footer">
+      <p className='login-footer'>
         Don&apos;t have an account?{" "}
-        <Link to="/signup">Sign up for free</Link>
+        <Link to='/signup' state={location.state}>
+          Sign up for free
+        </Link>
       </p>
     </div>
   );

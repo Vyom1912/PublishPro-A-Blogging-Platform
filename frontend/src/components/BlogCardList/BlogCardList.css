@@ -1,26 +1,47 @@
+/* Phone: stats on one line, action buttons share the row below */
 .blogs-insight {
-  padding: 5px 10px 10px;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin: 0 8px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(84, 119, 146, 0.25);
 }
 .blog-stats {
-  font-size: 1rem;
+  gap: 16px;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--dark);
-  gap: 10px;
 }
 .blog-actions {
-  gap: 10px;
+  gap: 8px;
 }
-.blogs-insight .inputBtn {
-  font-size: 0.8rem !important;
+.blog-actions .inputBtn {
+  flex: 1;
+  min-height: 36px;
   padding: 4px 10px;
+  font-size: 0.85rem !important;
 }
-@media (max-width: 400px) {
+.blog-actions .blog-delete-btn {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.blog-actions .blog-delete-btn:hover {
+  color: var(--bg);
+  background: var(--danger);
+}
+.empty-action {
+  width: auto;
+  margin-top: 14px;
+}
+
+@media (min-width: 480px) {
   .blogs-insight {
-    margin: 20px 20px 0;
-    border-top: 1px solid var(--mid-dark);
-    gap: 10px;
-    align-items: flex-start;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .blog-actions .inputBtn {
+    flex: 0 0 auto;
   }
 }

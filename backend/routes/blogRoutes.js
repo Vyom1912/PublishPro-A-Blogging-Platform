@@ -28,7 +28,8 @@ router.get("/my-blogs", authMiddleware, getMyBlogs);
 
 router.get("/author/:id", getAutherInfo);
 
-router.get("/:id", getBlogById);
+// optionalAuth so the response can include the viewer's like / save state
+router.get("/:id", optionalAuth, getBlogById);
 
 router.post("/", authMiddleware, upload.single("titleImage"), createBlog);
 

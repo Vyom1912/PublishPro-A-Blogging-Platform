@@ -1,27 +1,59 @@
+import mongoose from "mongoose";
 import User from "../models/User.js";
 import Blog from "../models/Blog.js";
-import cloudinary from "../config/cloudinary.js";
+import { uploadImage } from "../config/cloudinary.js";
+import { CARD_FIELDS } from "../services/blogServices.js";
 
 export const updateProfile = async (req, res) => {
   try {
+    const { name, email, about } = req.body;
+
+    if (name !== undefined && !name.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Name cannot be empty",
+      });
+    }
+
+    if (email !== undefined) {
+      if (!email.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Email cannot be empty",
+        });
+      }
+      const taken = await User.exists({
+        email: email.trim().toLowerCase(),
+        _id: { $ne: req.user._id },
+      });
+      if (taken) {
+        return res.status(400).json({
+          success: false,
+          message: "That email is already used by another account",
+        });
+      }
+    }
+
     let imageUrl;
 
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      // Avatars are shown small — no need to keep more than 400px
+      const result = await uploadImage(req.file.buffer, { maxWidth: 400 });
 
       imageUrl = result.secure_url;
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.user.id,
-      {
-        name: req.body.name,
-        email: req.body.email,
-        about: req.body.about,
-        ...(imageUrl && { image: imageUrl }),
-      },
-      { new: true },
-    );
+    const update = {
+      ...(name !== undefined && { name }),
+      ...(email !== undefined && { email }),
+      ...(about !== undefined && { about }),
+      ...(imageUrl && { image: imageUrl }),
+    };
+
+    const user = await User.findByIdAndUpdate(req.user.id, update, {
+      returnDocument: "after",
+      runValidators: true,
+    }).select("-savedBlogs -resetPasswordToken -resetPasswordExpire");
 
     res.json({
       success: true,
@@ -37,42 +69,28 @@ export const updateProfile = async (req, res) => {
 
 export const toggleBookmark = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    const blog = await Blog.findById(req.params.blogId);
+    const blogId = req.params.blogId;
 
-    if (!blog) {
+    if (!mongoose.isValidObjectId(blogId) || !(await Blog.exists({ _id: blogId }))) {
       return res.status(404).json({
         success: false,
         message: "Blog not found",
       });
     }
 
-    const blogId = req.params.blogId;
-    const userId = req.user._id.toString();
-
-    const alreadySaved = (user.savedBlogs || []).some(
+    const alreadySaved = (req.user.savedBlogs || []).some(
       (bid) => bid.toString() === blogId,
     );
 
-    if (alreadySaved) {
-      // Use atomic $pull so missing arrays on old documents are never a problem
-      await User.findByIdAndUpdate(req.user.id, {
-        $pull: { savedBlogs: blog._id },
-      });
-      await Blog.findByIdAndUpdate(blogId, {
-        $pull: { savedBy: req.user._id },
-      });
-      return res.json({ success: true, bookmarked: false });
-    }
+    // Atomic $pull / $addToSet so missing arrays on old documents are never a problem
+    const op = alreadySaved ? "$pull" : "$addToSet";
 
-    await User.findByIdAndUpdate(req.user.id, {
-      $addToSet: { savedBlogs: blog._id },
-    });
-    await Blog.findByIdAndUpdate(blogId, {
-      $addToSet: { savedBy: req.user._id },
-    });
+    await Promise.all([
+      User.findByIdAndUpdate(req.user._id, { [op]: { savedBlogs: blogId } }),
+      Blog.findByIdAndUpdate(blogId, { [op]: { savedBy: req.user._id } }),
+    ]);
 
-    res.json({ success: true, bookmarked: true });
+    res.json({ success: true, bookmarked: !alreadySaved });
   } catch (error) {
     console.error("toggleBookmark error:", error.message);
     res.status(500).json({
@@ -84,11 +102,17 @@ export const toggleBookmark = async (req, res) => {
 
 export const getSavedBlogs = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate("savedBlogs");
+    const user = await User.findById(req.user.id)
+      .select("savedBlogs")
+      .populate({ path: "savedBlogs", select: CARD_FIELDS })
+      .lean();
+
+    // Most recently saved first; drop entries whose blog was deleted
+    const blogs = (user?.savedBlogs || []).filter(Boolean).reverse();
 
     res.json({
       success: true,
-      blogs: user.savedBlogs,
+      blogs,
     });
   } catch (error) {
     res.status(500).json({
@@ -100,9 +124,8 @@ export const getSavedBlogs = async (req, res) => {
 
 export const getBookmarkStatus = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-
-    const bookmarked = user.savedBlogs.some(
+    // req.user is already loaded by authMiddleware
+    const bookmarked = (req.user.savedBlogs || []).some(
       (id) => id.toString() === req.params.blogId,
     );
 
